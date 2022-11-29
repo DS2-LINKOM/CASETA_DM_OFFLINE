@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:fontFamily="@font/fontNegritaC"
+
+    >
+
+
+    <item
+        android:id="@+id/Usuario"
+        android:icon="@drawable/ic_usuario"
+        app:showAsAction="ifRoom"
+        android:title="" />
+
+            <item
+                android:id="@+id/Inicio"
+                android:icon="@drawable/ic_inicio"
+                android:title="@string/Inicio"
+                app:showAsAction="ifRoom"
+
+                />
+
+    <item
+        android:id="@+id/Cerrar"
+        android:icon="@drawable/ic_salir"
+        android:title="@string/Cerrar"
+        app:showAsAction="ifRoom"
+        />
+
+    <item
+        android:id="@+id/Versión"
+        android:icon="@drawable/ic_info"
+        android:title="Linkom © v.24.23.35"
+        app:showAsAction="ifRoom"
+        />
+
+
+</menu>

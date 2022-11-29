@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:layout_gravity="center"
+    android:background="@drawable/border_grid"
+    android:gravity="center"
+
+    >
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="42dp">
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:srcCompat="@drawable/ic_baseline_airline_seat_recline_normal_24" />
+
+        <customfonts.MyTextView
+            android:id="@+id/title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="20dp"
+            android:textColor="@color/darkTextColor"
+            android:text="Shop"
+            android:layout_gravity="center"
+            android:textAlignment="center"/>
+
+
+
+       <LinearLayout
+            android:id="@+id/line"
+            android:layout_width="22dp"
+            android:layout_height="3dp"
+            android:background="#4cd2c7"
+            android:layout_gravity="center"
+            android:layout_marginTop="8dp"
+            android:orientation="vertical"      ></LinearLayout>
+
+
+    </LinearLayout>
+
+
+
+
+</LinearLayout>

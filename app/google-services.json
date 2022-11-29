@@ -1,0 +1,193 @@
+{
+  "project_info": {
+    "project_number": "268241043478",
+    "firebase_url": "https://demoarboledas-89ef9.firebaseio.com",
+    "project_id": "demoarboledas-89ef9",
+    "storage_bucket": "demoarboledas-89ef9.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:268241043478:android:32e89e9274c6741b3a3537",
+        "android_client_info": {
+          "package_name": "mx.linkom.arboledas_demo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "268241043478-iijp07s92gcd4d03e7gi8rgj6g782255.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBKfCMK5u0F8N8FtBk86EXqwxtq-mKCs3Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "268241043478-iijp07s92gcd4d03e7gi8rgj6g782255.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:268241043478:android:b539131169b59ebb3a3537",
+        "android_client_info": {
+          "package_name": "mx.linkom.caseta_completa"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "268241043478-iijp07s92gcd4d03e7gi8rgj6g782255.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBKfCMK5u0F8N8FtBk86EXqwxtq-mKCs3Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "268241043478-iijp07s92gcd4d03e7gi8rgj6g782255.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:268241043478:android:604e46cf960f84363a3537",
+        "android_client_info": {
+          "package_name": "mx.linkom.caseta_demo_arboledas"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "268241043478-e20jg3ib2f4ui1smooe3h2r5r0rob08a.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "mx.linkom.caseta_demo_arboledas",
+            "certificate_hash": "64c3418227b90f321cf7872425aa03d1182f2fe7"
+          }
+        },
+        {
+          "client_id": "268241043478-iijp07s92gcd4d03e7gi8rgj6g782255.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBKfCMK5u0F8N8FtBk86EXqwxtq-mKCs3Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "268241043478-iijp07s92gcd4d03e7gi8rgj6g782255.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:268241043478:android:76a43742edcd56c43a3537",
+        "android_client_info": {
+          "package_name": "mx.linkom.caseta_dm_offline"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "268241043478-iijp07s92gcd4d03e7gi8rgj6g782255.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBKfCMK5u0F8N8FtBk86EXqwxtq-mKCs3Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "268241043478-iijp07s92gcd4d03e7gi8rgj6g782255.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:268241043478:android:ed4ae77c162ae7523a3537",
+        "android_client_info": {
+          "package_name": "mx.linkom.caseta_modulo_acceso"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "268241043478-iijp07s92gcd4d03e7gi8rgj6g782255.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBKfCMK5u0F8N8FtBk86EXqwxtq-mKCs3Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "268241043478-iijp07s92gcd4d03e7gi8rgj6g782255.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:268241043478:android:88e72d467b8313d73a3537",
+        "android_client_info": {
+          "package_name": "mx.linkom.caseta_modulo_wifi"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "268241043478-iijp07s92gcd4d03e7gi8rgj6g782255.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBKfCMK5u0F8N8FtBk86EXqwxtq-mKCs3Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "268241043478-iijp07s92gcd4d03e7gi8rgj6g782255.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
