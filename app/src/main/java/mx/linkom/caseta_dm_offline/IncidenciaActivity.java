@@ -3,12 +3,16 @@ package mx.linkom.caseta_dm_offline;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.text.InputFilter;
 import android.text.Spanned;
@@ -22,6 +26,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.FileProvider;
 
@@ -47,13 +52,17 @@ import org.json.JSONException;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
 import id.zelory.compressor.Compressor;
+import mx.linkom.caseta_dm_offline.offline.Database.Database;
+import mx.linkom.caseta_dm_offline.offline.Global_info;
 
 
 public class IncidenciaActivity  extends mx.linkom.caseta_dm_offline.Menu{
@@ -67,12 +76,13 @@ public class IncidenciaActivity  extends mx.linkom.caseta_dm_offline.Menu{
     LinearLayout registrar1,registrar2,registrar3,registrar4;
     LinearLayout foto2,foto3,espacio1,espacio2,espacio3,espacio4,espacio5,espacio6,espacio7;
     String ima1,ima2,ima3;
-    ProgressDialog pd,pd2,pd3;
+    ProgressDialog pd,pd2,pd3,pd4;
     FirebaseStorage storage;
     StorageReference storageReference;
     Configuracion Conf;
     EditText Comentarios,Accion;
     Uri uri_img,uri_img2,uri_img3;
+    String rutaImagen1, rutaImagen2, rutaImagen3;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -202,6 +212,9 @@ public class IncidenciaActivity  extends mx.linkom.caseta_dm_offline.Menu{
         pd3= new ProgressDialog(this);
         pd3.setMessage("Subiendo Foto 3...");
 
+        pd4= new ProgressDialog(this);
+        pd4.setMessage("Cargando...");
+
     }
 
     InputFilter filter = new InputFilter() {
@@ -288,6 +301,7 @@ public class IncidenciaActivity  extends mx.linkom.caseta_dm_offline.Menu{
             File foto=null;
             try {
                 foto= new File(getApplication().getExternalFilesDir(null),"incidencia1.png");
+                rutaImagen1 = foto.getAbsolutePath();
             } catch (Exception ex) {
                 AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(IncidenciaActivity.this);
                 alertDialogBuilder.setTitle("Alerta");
@@ -317,6 +331,7 @@ public class IncidenciaActivity  extends mx.linkom.caseta_dm_offline.Menu{
             File foto=null;
             try {
                 foto = new File(getApplication().getExternalFilesDir(null),"incidencia2.png");
+                rutaImagen2 = foto.getAbsolutePath();
             } catch (Exception ex) {
                 AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(IncidenciaActivity.this);
                 alertDialogBuilder.setTitle("Alerta");
@@ -346,6 +361,7 @@ public class IncidenciaActivity  extends mx.linkom.caseta_dm_offline.Menu{
             File foto=null;
             try {
                 foto = new File(getApplication().getExternalFilesDir(null),"incidencia3.png");
+                rutaImagen3 = foto.getAbsolutePath();
             } catch (Exception ex) {
                 AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(IncidenciaActivity.this);
                 alertDialogBuilder.setTitle("Alerta");
@@ -441,8 +457,15 @@ public class IncidenciaActivity  extends mx.linkom.caseta_dm_offline.Menu{
         alertDialogBuilder
                 .setMessage("¿ Desea registrar la incidencia ?")
                 .setPositiveButton("Ok",new DialogInterface.OnClickListener() {
+                    @RequiresApi(api = Build.VERSION_CODES.O)
                     public void onClick(DialogInterface dialog, int id) {
-                        Registrar(Ids);
+                        //Validar conexión a internet
+                        if (Global_info.getINTERNET().equals("Si")){
+                            Registrar(Ids);
+                        }else if (Global_info.getINTERNET().equals("No")){
+                            pd4.show();
+                            RegistrarOffline(Ids);
+                        }
                     }
                 })
                 .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
@@ -453,6 +476,184 @@ public class IncidenciaActivity  extends mx.linkom.caseta_dm_offline.Menu{
                         finish();
                     }
                 }).create().show();
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public void RegistrarOffline(final int Id){
+
+        String rutacarpeta = getApplication().getExternalFilesDir(Environment.DIRECTORY_PICTURES) + "/";
+
+        try {
+            Database base = new Database(IncidenciaActivity.this);
+            SQLiteDatabase bd = base.getWritableDatabase();
+            long id = 0;
+
+            String nombre1 = "app"+numero_aletorio+numero_aletorio3+".png";
+            String nombre2 = "app"+numero_aletorio2+numero_aletorio+".png";
+            String nombre3 = "app"+numero_aletorio3+numero_aletorio2+".png";
+
+            //Registrar fotos en SQLite
+            switch (Id){
+                case 2:
+                    ima1=nombre1;
+                    ima2="";
+                    ima3="";
+
+                    GuardarImagen(nombre1, rutaImagen1, uri_img);
+
+                    base.RegistrarImagen(ima1, Conf.getPin()+"/incidencias/"+ima1.trim(), rutacarpeta+nombre1, bd);
+
+                    break;
+                case 3:
+                    ima1=nombre1;
+                    ima2=nombre2;
+                    ima3="";
+
+                    GuardarImagen(nombre1, rutaImagen1, uri_img);
+                    GuardarImagen(nombre2, rutaImagen2, uri_img2);
+
+                    base.RegistrarImagen(ima1, Conf.getPin()+"/incidencias/"+ima1.trim(), rutacarpeta+nombre1, bd);
+                    base.RegistrarImagen(ima2, Conf.getPin()+"/incidencias/"+ima2.trim(), rutacarpeta+nombre2, bd);
+
+                    break;
+                case 4:
+                    ima1=nombre1;
+                    ima2=nombre2;
+                    ima3=nombre3;
+
+                    GuardarImagen(nombre1, rutaImagen1, uri_img);
+                    GuardarImagen(nombre2, rutaImagen2, uri_img2);
+                    GuardarImagen(nombre3, rutaImagen3, uri_img3);
+
+                    base.RegistrarImagen(ima1, Conf.getPin()+"/incidencias/"+ima1.trim(), rutacarpeta+nombre1, bd);
+                    base.RegistrarImagen(ima2, Conf.getPin()+"/incidencias/"+ima2.trim(), rutacarpeta+nombre2, bd);
+                    base.RegistrarImagen(ima3, Conf.getPin()+"/incidencias/"+ima3.trim(), rutacarpeta+nombre3, bd);
+                    break;
+                default:
+                    ima1="";
+                    ima2="";
+                    ima3="";
+                    break;
+            }
+
+
+
+            LocalDateTime hoy = LocalDateTime.now();
+
+            int year = hoy.getYear();
+            int month = hoy.getMonthValue();
+            int day = hoy.getDayOfMonth();
+            int hour = hoy.getHour();
+            int minute = hoy.getMinute();
+            int second =hoy.getSecond();
+
+            ContentValues values = new ContentValues();
+            values.put("id_residencial", Conf.getResid().trim());
+            values.put("id_usuario", Conf.getUsu().trim());
+            values.put("id_tipo", 0);
+            values.put("id_rondin", 0);
+            values.put("dia", year+"-"+month+"-"+day);
+            values.put("hora", hour+":"+minute+":"+second);
+            values.put("detalle", Comentarios.getText().toString().trim());
+            values.put("accion", Accion.getText().toString().trim());
+            values.put("foto1", ima1);
+            values.put("foto2", ima2);
+            values.put("foto3", ima3);
+            values.put("club", 0);
+            values.put("estatus", 1);
+            values.put("sqliteEstatus", 1);
+
+            id = bd.insert("incidencias", null, values);
+
+            if (id > 0){
+                pd4.dismiss();
+                //Toast.makeText(this, "Registro correcto en modo offline", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(this, Global_info.getULTIMA_ACTUALIZACION(), Toast.LENGTH_SHORT).show();
+
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(IncidenciaActivity.this);
+                alertDialogBuilder.setTitle("Alerta");
+                alertDialogBuilder
+                        .setMessage("Registro de incidencia exitosa en modo offline " + Global_info.getULTIMA_ACTUALIZACION())
+                        .setPositiveButton("Ok",new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                Intent i = new Intent(getApplicationContext(), ReportesActivity.class);
+                                startActivity(i);
+                                finish();
+                            }
+                        }).create().show();
+
+                bd.close();
+
+            }else{
+                pd4.dismiss();
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(IncidenciaActivity.this);
+                alertDialogBuilder.setTitle("Alerta");
+                alertDialogBuilder
+                        .setMessage("Registro de incidencia no exitoso en modo offline")
+                        .setPositiveButton("Ok",new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                Intent i = new Intent(getApplicationContext(), ReportesActivity.class);
+                                startActivity(i);
+                                finish();
+                            }
+                        }).create().show();
+                //Toast.makeText(this, "Error al registrar en modo offline", Toast.LENGTH_SHORT).show();
+            }
+        }catch (Exception ex){
+            System.out.println(ex.toString());
+        }
+
+
+        System.out.println(rutaImagen1);
+    }
+
+    public void GuardarImagen(String nombreImagen, String direccionImagen, Uri uriImagen) {
+        try {
+
+            // uri de la imagen seleccionada
+            Uri uri = uriImagen;
+            //carpeta "imagenesguardadas"
+            String rutacarpeta = getApplication().getExternalFilesDir(Environment.DIRECTORY_PICTURES) + "/";
+            // nombre del nuevo png
+            String nombre = nombreImagen;
+            // Compruebas si existe la carpeta "PICTURES", sino, la crea
+            File directorioImagenes = new File(rutacarpeta);
+            if (!directorioImagenes.exists())
+                directorioImagenes.mkdirs();
+
+            // le pasas al bitmap la uri de la imagen seleccionada
+            Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
+
+
+            // pones las medidas que quieras del nuevo .png
+            int bitmapWidth = bitmap.getWidth(); // para utilizar width de la imagen original: bitmap.getWidth();
+            int bitmapHeight = bitmap.getHeight(); // para utilizar height de la imagen original: bitmap.getHeight();
+            Bitmap bitmapout = Bitmap.createScaledBitmap(bitmap, bitmapWidth, bitmapHeight, false);
+            //creas el nuevo png en la nueva ruta
+            bitmapout.compress(Bitmap.CompressFormat.PNG, 100, new FileOutputStream(rutacarpeta + nombre));
+
+
+            /*ExifInterface exif = new ExifInterface(rutacarpeta+nombreImagen);
+            int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED);
+
+            Matrix matrix = new Matrix();
+            switch (orientation) {
+                case ExifInterface.ORIENTATION_ROTATE_90:
+                    matrix.postRotate(90);
+                    break;
+                case ExifInterface.ORIENTATION_ROTATE_180:
+                    matrix.postRotate(180);
+                    break;
+                case ExifInterface.ORIENTATION_ROTATE_270:
+                    matrix.postRotate(270);
+                    break;
+                default:
+                    break;
+            }*/
+
+        }catch (Exception ex){
+            System.out.println(ex.toString());
+        }
     }
 
     public void Registrar(final int Id){

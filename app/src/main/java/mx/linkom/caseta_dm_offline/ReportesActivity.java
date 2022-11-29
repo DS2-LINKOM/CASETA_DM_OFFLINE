@@ -1,6 +1,8 @@
 package mx.linkom.caseta_dm_offline;
 
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
@@ -30,6 +32,8 @@ import java.util.Map;
 
 import mx.linkom.caseta_dm_offline.adaptadores.ModuloClassGrid;
 import mx.linkom.caseta_dm_offline.adaptadores.adaptador_Modulo;
+import mx.linkom.caseta_dm_offline.offline.Database.Database;
+import mx.linkom.caseta_dm_offline.offline.Global_info;
 
 public class ReportesActivity extends  Menu {
     private Configuracion Conf;
@@ -53,10 +57,60 @@ public class ReportesActivity extends  Menu {
     @Override
     public void onStart() {
         super.onStart();
-        menu();
+        if (Global_info.getINTERNET().equals("Si")){
+            menu();
+        }else {
+            menuOffline();
+        }
     }
 
+    public void menuOffline(){
 
+        Database base = new Database(ReportesActivity.this);
+        SQLiteDatabase bd = base.getWritableDatabase();
+
+        try {
+            Cursor cursoAppCaseta = null;
+
+
+            cursoAppCaseta = bd.rawQuery("SELECT * FROM app_caseta" , null);
+
+            ja1 = new JSONArray();
+
+            if (cursoAppCaseta.moveToFirst()){
+                ja1.put(cursoAppCaseta.getString(0));
+                ja1.put(cursoAppCaseta.getString(1));
+                ja1.put(cursoAppCaseta.getString(2));
+                ja1.put(cursoAppCaseta.getString(3));
+                ja1.put(cursoAppCaseta.getString(4));
+                ja1.put(cursoAppCaseta.getString(5));
+                ja1.put(cursoAppCaseta.getString(6));
+                ja1.put(cursoAppCaseta.getString(7));
+                ja1.put(cursoAppCaseta.getString(8));
+                ja1.put(cursoAppCaseta.getString(9));
+                ja1.put(cursoAppCaseta.getString(10));
+                ja1.put(cursoAppCaseta.getString(11));
+                ja1.put(cursoAppCaseta.getString(12));
+
+            }
+
+            cursoAppCaseta.close();
+
+            llenado();
+            llenado2();
+            llenado3();
+            llenado4();
+            llenado5();
+            llenado6();
+
+        }catch (Exception ex){
+            System.out.println(ex.toString());
+            Toast.makeText(getApplicationContext(), "Usuario y/o Contraseña Incorrectos", Toast.LENGTH_LONG).show();
+        }finally {
+            bd.close();
+        }
+
+    }
 
     public void menu() {
 

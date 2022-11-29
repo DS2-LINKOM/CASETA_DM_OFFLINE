@@ -1,7 +1,12 @@
 package mx.linkom.caseta_dm_offline;
 
+import android.app.ActivityManager;
+import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -13,6 +18,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.android.volley.AuthFailureError;
@@ -36,6 +42,9 @@ import java.util.Map;
 
 import mx.linkom.caseta_dm_offline.adaptadores.ModuloClassGrid;
 import mx.linkom.caseta_dm_offline.adaptadores.adaptador_Modulo;
+import mx.linkom.caseta_dm_offline.offline.Database.Database;
+import mx.linkom.caseta_dm_offline.offline.Global_info;
+import mx.linkom.caseta_dm_offline.offline.Servicios.testInternet;
 
 public class DashboardActivity extends  mx.linkom.caseta_dm_offline.Menu {
     private FirebaseAuth fAuth;
@@ -49,6 +58,7 @@ public class DashboardActivity extends  mx.linkom.caseta_dm_offline.Menu {
 
     private GridView gridList,gridList2;
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,14 +80,42 @@ public class DashboardActivity extends  mx.linkom.caseta_dm_offline.Menu {
         rlVistantes = (LinearLayout)findViewById(R.id.rlVistantes);
         rlTrabajadores = (LinearLayout)findViewById(R.id.rlTrabajadores);
         nombre.setText(Conf.getNomResi());
+
+        //Iniciar el servicio
+        if(!foregroundServiceRunning()) { //Solo se va a ejecutar el servicio si es que aún no se esta ejecutando aun
+            Intent serviceIntent = new Intent(this, testInternet.class);
+            startForegroundService(serviceIntent);
+        }
+
     }
+
+    //Método para saber si es que el servicio ya se esta ejecutando
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    public boolean foregroundServiceRunning(){
+        //Obtiene los servicios que se estan ejecutando
+        ActivityManager activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        //Se recorren todos los servicios obtnidos para saber si el servicio creado ya se esta ejecutando
+        for(ActivityManager.RunningServiceInfo service: activityManager.getRunningServices(Integer.MAX_VALUE)) {
+            if(testInternet.class.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
     @Override
     public void onStart() {
         super.onStart();
 
         Registro();
         Sesion();
-        menu();
+
+        if (Global_info.getINTERNET().equals("Si")){
+            menu();
+        }else {
+            menuOffline();
+        }
 
     }
 
@@ -120,6 +158,49 @@ public class DashboardActivity extends  mx.linkom.caseta_dm_offline.Menu {
         }
     }
 
+    public void menuOffline(){
+
+        Database base = new Database(getApplicationContext());
+        SQLiteDatabase bd = base.getWritableDatabase();
+
+        try {
+            Cursor cursoAppCaseta = null;
+
+            cursoAppCaseta = bd.rawQuery("SELECT * FROM app_caseta" , null);
+
+            ja3 = new JSONArray();
+
+            if (cursoAppCaseta.moveToFirst()){
+                ja3.put(cursoAppCaseta.getString(0));
+                ja3.put(cursoAppCaseta.getString(1));
+                ja3.put(cursoAppCaseta.getString(2));
+                ja3.put(cursoAppCaseta.getString(3));
+                ja3.put(cursoAppCaseta.getString(4));
+                ja3.put(cursoAppCaseta.getString(5));
+                ja3.put(cursoAppCaseta.getString(6));
+                ja3.put(cursoAppCaseta.getString(7));
+                ja3.put(cursoAppCaseta.getString(8));
+                ja3.put(cursoAppCaseta.getString(9));
+                ja3.put(cursoAppCaseta.getString(10));
+                ja3.put(cursoAppCaseta.getString(11));
+                ja3.put(cursoAppCaseta.getString(12));
+
+            }
+
+            cursoAppCaseta.close();
+
+            Info();
+            llenado();
+            llenado2();
+
+        }catch (Exception ex){
+            System.out.println(ex.toString());
+            Toast.makeText(getApplicationContext(), "Usuario y/o Contraseña Incorrectos", Toast.LENGTH_LONG).show();
+        }finally {
+            bd.close();
+        }
+
+    }
 
     public void menu() {
 

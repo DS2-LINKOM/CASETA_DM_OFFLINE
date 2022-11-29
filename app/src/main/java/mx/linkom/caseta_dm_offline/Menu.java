@@ -19,6 +19,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
+import mx.linkom.caseta_dm_offline.offline.Global_info;
+
 
 public class Menu extends AppCompatActivity implements PopupMenu.OnMenuItemClickListener, android.widget.PopupMenu.OnMenuItemClickListener {
     private Configuracion Conf;
@@ -33,13 +35,28 @@ public class Menu extends AppCompatActivity implements PopupMenu.OnMenuItemClick
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
 
-        if (networkInfo != null && networkInfo.isConnected()) {
+        /*if (networkInfo != null && networkInfo.isConnected()) {
             /// Log.d("MIAPP", "Estás online");
         } else {
             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(Menu.this);
             alertDialogBuilder.setTitle("Alerta");
             alertDialogBuilder
                     .setMessage("Conexión de Internet Inestable")
+                    .setPositiveButton("Ok",new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+
+                        }
+                    }).create().show();
+            //Log.d("MIAPP", "Estás offline");
+        }*/
+
+        if (Global_info.getINTERNET().equals("Si")) {
+            /// Log.d("MIAPP", "Estás online");
+        } else {
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(Menu.this);
+            alertDialogBuilder.setTitle("Alerta");
+            alertDialogBuilder
+                    .setMessage("Conexión de internet inestable, app funcionando en modo offline. \n\n" + Global_info.getULTIMA_ACTUALIZACION())
                     .setPositiveButton("Ok",new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
 

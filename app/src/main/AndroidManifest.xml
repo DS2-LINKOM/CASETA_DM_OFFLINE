@@ -17,6 +17,13 @@
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="true"></uses-feature>
+
     <application
         android:allowBackup="true"
         android:debuggable="false"
@@ -628,6 +635,10 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
+
+        <service android:name=".offline.Servicios.testInternet" />
+
+        <service android:name=".offline.Servicios.subirFotos" />
 
         <uses-library
             android:name="org.apache.http.legacy"
