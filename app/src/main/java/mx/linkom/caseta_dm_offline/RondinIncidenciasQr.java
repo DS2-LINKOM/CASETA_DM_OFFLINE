@@ -2,11 +2,14 @@ package mx.linkom.caseta_dm_offline;
 
 
 import android.app.ProgressDialog;
+import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.InputFilter;
@@ -21,6 +24,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.FileProvider;
 
@@ -44,12 +48,15 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.io.File;
+import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
 import mx.linkom.caseta_dm_offline.Menu;
+import mx.linkom.caseta_dm_offline.offline.Database.UrisContentProvider;
+import mx.linkom.caseta_dm_offline.offline.Global_info;
 
 
 public class RondinIncidenciasQr extends Menu {
@@ -70,6 +77,11 @@ public class RondinIncidenciasQr extends Menu {
     EditText Comentarios,Accion;
     Uri uri_img,uri_img2,uri_img3;
     JSONArray ja1;
+    boolean Offline = false;
+    String rutaImagen1, rutaImagen2, rutaImagen3;
+    ImageView iconoInternet;
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rondinincidencias_qr);
@@ -115,12 +127,51 @@ public class RondinIncidenciasQr extends Menu {
         foto2 = (LinearLayout) findViewById(R.id.foto2);
         foto3 = (LinearLayout) findViewById(R.id.foto3);
 
+        iconoInternet = (ImageView) findViewById(R.id.iconoInternetRondinIncidenciasQr);
+
+        if (Global_info.getINTERNET().equals("Si")){
+            Offline = false;
+            iconoInternet.setImageResource(R.drawable.ic_online);
+        }else {
+            Offline = true;
+            iconoInternet.setImageResource(R.drawable.ic_offline);
+        }
+
+        iconoInternet.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (Offline){
+                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(RondinIncidenciasQr.this);
+                    alertDialogBuilder.setTitle("Alerta");
+                    alertDialogBuilder
+                            .setMessage("Aplicación funcionando en modo offline \n\nDatos actualizados hasta: \n\n"+Global_info.getULTIMA_ACTUALIZACION())
+                            .setPositiveButton("Ok",new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                }
+                            }).create().show();
+                }else {
+                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(RondinIncidenciasQr.this);
+                    alertDialogBuilder.setTitle("Alerta");
+                    alertDialogBuilder
+                            .setMessage("Aplicación funcionando en modo online \n\nDatos actualizados para funcionamiento en modo offline hasta: \n\n"+Global_info.getULTIMA_ACTUALIZACION())
+                            .setPositiveButton("Ok",new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                }
+                            }).create().show();
+                }
+            }
+        });
 
         foto1_boton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 foto=1;
-                imgFoto();
+
+                if (Offline){
+                    imgFotoOffline();
+                }else {
+                    imgFoto();
+                }
             }
         });
 
@@ -129,7 +180,12 @@ public class RondinIncidenciasQr extends Menu {
             @Override
             public void onClick(View v) {
                 foto=2;
-                imgFoto2();
+                if (Offline){
+                    imgFoto2Offline();
+                }else {
+                    imgFoto2();
+                }
+
             }
         });
 
@@ -137,7 +193,12 @@ public class RondinIncidenciasQr extends Menu {
             @Override
             public void onClick(View v) {
                 foto=3;
-                imgFoto3();
+                if (Offline){
+                    imgFoto3Offline();
+                }else{
+                    imgFoto3();
+                }
+
             }
         });
 
@@ -152,7 +213,11 @@ public class RondinIncidenciasQr extends Menu {
             @Override
             public void onClick(View v) {
                 foto=2;
-                imgFoto2();
+                if (Offline){
+                    imgFoto2Offline();
+                }else {
+                    imgFoto2();
+                }
                 registrar2.setVisibility(View.GONE);
                 foto2.setVisibility(View.VISIBLE);
             }
@@ -169,7 +234,11 @@ public class RondinIncidenciasQr extends Menu {
             @Override
             public void onClick(View v) {
                 foto=3;
-                imgFoto3();
+                if (Offline){
+                    imgFoto3Offline();
+                }else{
+                    imgFoto3();
+                }
                 registrar3.setVisibility(View.GONE);
                 foto3.setVisibility(View.VISIBLE);
             }
@@ -197,7 +266,12 @@ public class RondinIncidenciasQr extends Menu {
 
         pd3= new ProgressDialog(this);
         pd3.setMessage("Subiendo Foto 3...");
-        rondin();
+
+        if (Offline){
+            rondinOffline();
+        }else{
+            rondin();
+        }
     }
 
     InputFilter filter = new InputFilter() {
@@ -218,14 +292,14 @@ public class RondinIncidenciasQr extends Menu {
 
     String[] segundo = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j",
             "k", "l", "m","n","o","p","q","r","s","t","u","v","w", "x","y","z" };
-    int numRandonsegun = (int) Math.round(Math.random() * 26 ) ;
+    int numRandonsegun = (int) Math.round(Math.random() * 25 ) ;
 
     Random tercero = new Random();
     int tercer= tercero.nextInt(9);
 
     String[] cuarto = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j",
             "k", "l", "m","n","o","p","q","r","s","t","u","v","w", "x","y","z" };
-    int numRandoncuart = (int) Math.round(Math.random() * 26 ) ;
+    int numRandoncuart = (int) Math.round(Math.random() * 25 ) ;
 
     String numero_aletorio=prime+segundo[numRandonsegun]+tercer+cuarto[numRandoncuart];
 
@@ -236,14 +310,14 @@ public class RondinIncidenciasQr extends Menu {
 
     String[] segundo2 = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j",
             "k", "l", "m","n","o","p","q","r","s","t","u","v","w", "x","y","z" };
-    int numRandonsegun2 = (int) Math.round(Math.random() * 26 ) ;
+    int numRandonsegun2 = (int) Math.round(Math.random() * 25 ) ;
 
     Random tercero2 = new Random();
     int tercer2= tercero2.nextInt(9);
 
     String[] cuarto2 = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j",
             "k", "l", "m","n","o","p","q","r","s","t","u","v","w", "x","y","z" };
-    int numRandoncuart2 = (int) Math.round(Math.random() * 26 ) ;
+    int numRandoncuart2 = (int) Math.round(Math.random() * 25 ) ;
 
     String numero_aletorio2=prime2+segundo2[numRandonsegun2]+tercer2+cuarto2[numRandoncuart2];
 
@@ -254,14 +328,14 @@ public class RondinIncidenciasQr extends Menu {
 
     String[] segundo3 = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j",
             "k", "l", "m","n","o","p","q","r","s","t","u","v","w", "x","y","z" };
-    int numRandonsegun3 = (int) Math.round(Math.random() * 26 ) ;
+    int numRandonsegun3 = (int) Math.round(Math.random() * 25 ) ;
 
     Random tercero3 = new Random();
     int tercer3= tercero3.nextInt(9);
 
     String[] cuarto3 = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j",
             "k", "l", "m","n","o","p","q","r","s","t","u","v","w", "x","y","z" };
-    int numRandoncuart3 = (int) Math.round(Math.random() * 26 ) ;
+    int numRandoncuart3 = (int) Math.round(Math.random() * 25 ) ;
 
     String numero_aletorio3=prime3+segundo3[numRandonsegun3]+tercer3+cuarto3[numRandoncuart3];
 
@@ -270,6 +344,92 @@ public class RondinIncidenciasQr extends Menu {
     int anio = fecha.get(Calendar.YEAR);
     int mes = fecha.get(Calendar.MONTH) + 1;
     int dia = fecha.get(Calendar.DAY_OF_MONTH);
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public void rondinOffline() {
+
+
+        LocalDateTime hoy = LocalDateTime.now();
+
+        int year = hoy.getYear();
+        int month = hoy.getMonthValue();
+        int day = hoy.getDayOfMonth();
+
+        String fecha = "";
+
+        //Poner el cero cuando el mes o dia es menor a 10
+        if (day < 10 || month < 10){
+            if (month < 10 && day >= 10){
+                fecha = year+"-0"+month+"-"+day;
+            } else if (month >= 10 && day < 10){
+                fecha = year+"-"+month+"-0"+day;
+            }else if (month < 10 && day < 10){
+                fecha = year+"-0"+month+"-0"+day;
+            }
+        }else {
+            fecha = year+"-"+month+"-"+day;
+        }
+
+        LocalDateTime hoy2 = hoy.plusMinutes(30);
+
+
+        int hour = hoy2.getHour();
+        int minute = hoy2.getMinute();
+
+        String hora = "";
+
+        if (hour < 10 || minute < 10){
+            if (hour < 10 && minute >=10){
+                hora = "0"+hour+":"+minute;
+            }else if (hour >= 10 && minute < 10){
+                hora = hour+":0"+minute;
+            }else if (hour < 10 && minute < 10){
+                hora = "0"+hour+":0"+minute;
+            }
+        }else {
+            hora = hour+":"+minute;
+        }
+
+        String id = Conf.getRondin().trim();
+        String usuario = Conf.getUsu().trim();
+        String dia = fecha;
+        String id_residencial = Conf.getResid().trim();
+        String tiempo = hora;
+
+        String parametros[] = {id, usuario, dia, id_residencial, tiempo};
+
+        Log.e("error", "SELECT ubi.id, ubi.hora, ubis.nombre, dia.id, dia.dia, rondin.id, rondin.nombre, ubis.qr FROM rondines_ubicaciones_qr as ubi, rondines_dia_qr as dia, rondines_qr as rondin, ubicaciones_qr as ubis WHERE ubi.id="+"'"+id+"'"+" and ubi.id_usuario="+"'"+usuario+"'"+" and ubi.id_rondin=dia.id_rondin and ubi.id_rondin=rondin.id and dia.dia="+"'"+dia+"'"+" and ubi.id_residencial="+"'"+id_residencial+"'"+" and ubi.hora<="+"'"+tiempo+"'"+" and ubis.id=ubi.id_ubicacion and NOT EXISTS (SELECT * FROM rondines_dtl_qr WHERE rondines_dtl_qr.id_ubicaciones=ubi.id and rondines_dtl_qr.id_dia=dia.id and rondines_dtl_qr.id_rondin=rondin.id)");
+
+        Cursor cursorRondin = getContentResolver().query(UrisContentProvider.URI_CONTENIDO_RONDINESDIAQR, null, null, parametros, null);
+
+        ja1 = new JSONArray();
+
+        if (cursorRondin.moveToFirst()){
+            ja1.put(cursorRondin.getString(0));
+            ja1.put(cursorRondin.getString(1));
+            ja1.put(cursorRondin.getString(2));
+            ja1.put(cursorRondin.getString(3));
+            ja1.put(cursorRondin.getString(4));
+            ja1.put(cursorRondin.getString(5));
+            ja1.put(cursorRondin.getString(6));
+            ja1.put(cursorRondin.getString(7));
+        }else{
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(RondinIncidenciasQr.this);
+            alertDialogBuilder.setTitle("Alerta");
+            alertDialogBuilder
+                    .setMessage("Error al obtener detalles del rondin")
+                    .setPositiveButton("Ok",new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            Intent i = new Intent(getApplicationContext(), Rondines.class);
+                            startActivity(i);
+                            finish();
+                        }
+                    }).create().show();
+        }
+
+        cursorRondin.close();
+
+    }
 
     public void rondin() {
         String URL = "https://demoarboledas.privadaarboledas.net/plataforma/casetaV2/controlador/CC/rondines_qr_2.php?bd_name="+Conf.getBd()+"&bd_user="+Conf.getBdUsu()+"&bd_pwd="+Conf.getBdCon();
@@ -341,6 +501,36 @@ public class RondinIncidenciasQr extends Menu {
         }
     }
 
+    public void imgFotoOffline(){
+        Intent intentCaptura = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        intentCaptura.addFlags(intentCaptura.FLAG_GRANT_READ_URI_PERMISSION);
+
+        if (intentCaptura.resolveActivity(getPackageManager()) != null) {
+
+            File foto=null;
+            try {
+                foto= new File(getApplication().getExternalFilesDir(null),"app"+numero_aletorio+numero_aletorio3+".png");
+                rutaImagen1 = foto.getAbsolutePath();
+            } catch (Exception ex) {
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(RondinIncidenciasQr.this);
+                alertDialogBuilder.setTitle("Alerta");
+                alertDialogBuilder
+                        .setMessage("Error al capturar la foto")
+                        .setPositiveButton("Ok",new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+
+                            }
+                        }).create().show();
+            }
+            if (foto != null) {
+
+                uri_img= FileProvider.getUriForFile(getApplicationContext(),getApplicationContext().getPackageName()+".provider",foto);
+                intentCaptura.putExtra(MediaStore.EXTRA_OUTPUT,uri_img);
+                startActivityForResult(intentCaptura, 0);
+            }
+        }
+    }
+
 
     public void imgFoto2(){
         Intent intentCaptura = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -350,6 +540,34 @@ public class RondinIncidenciasQr extends Menu {
             File foto=null;
             try {
                 foto = new File(getApplication().getExternalFilesDir(null),"rondines2.png");
+            } catch (Exception ex) {
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(RondinIncidenciasQr.this);
+                alertDialogBuilder.setTitle("Alerta");
+                alertDialogBuilder
+                        .setMessage("Error al capturar la foto")
+                        .setPositiveButton("Ok",new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+
+                            }
+                        }).create().show();
+            }
+            if (foto != null) {
+                uri_img2= FileProvider.getUriForFile(getApplicationContext(),getApplicationContext().getPackageName()+".provider",foto);
+                intentCaptura.putExtra(MediaStore.EXTRA_OUTPUT,uri_img2);
+                startActivityForResult( intentCaptura, 1);
+            }
+        }
+    }
+
+    public void imgFoto2Offline(){
+        Intent intentCaptura = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        intentCaptura.addFlags(intentCaptura.FLAG_GRANT_READ_URI_PERMISSION);
+
+        if (intentCaptura.resolveActivity(getPackageManager()) != null) {
+            File foto=null;
+            try {
+                foto = new File(getApplication().getExternalFilesDir(null),"app"+numero_aletorio2+numero_aletorio+".png");
+                rutaImagen2 = foto.getAbsolutePath();
             } catch (Exception ex) {
                 AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(RondinIncidenciasQr.this);
                 alertDialogBuilder.setTitle("Alerta");
@@ -398,6 +616,35 @@ public class RondinIncidenciasQr extends Menu {
         }
     }
 
+    public void imgFoto3Offline(){
+        Intent intentCaptura = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        intentCaptura.addFlags(intentCaptura.FLAG_GRANT_READ_URI_PERMISSION);
+
+        if (intentCaptura.resolveActivity(getPackageManager()) != null) {
+
+            File foto=null;
+            try {
+                foto = new File(getApplication().getExternalFilesDir(null),"app"+numero_aletorio3+numero_aletorio2+".png");
+                rutaImagen3 = foto.getAbsolutePath();
+            } catch (Exception ex) {
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(RondinIncidenciasQr.this);
+                alertDialogBuilder.setTitle("Alerta");
+                alertDialogBuilder
+                        .setMessage("Error al capturar la foto")
+                        .setPositiveButton("Ok",new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+
+                            }
+                        }).create().show();
+            }
+            if (foto != null) {
+                uri_img3= FileProvider.getUriForFile(getApplicationContext(),getApplicationContext().getPackageName()+".provider",foto);
+                intentCaptura.putExtra(MediaStore.EXTRA_OUTPUT,uri_img3);
+                startActivityForResult( intentCaptura, 2);
+            }
+        }
+    }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -407,8 +654,13 @@ public class RondinIncidenciasQr extends Menu {
         if (resultCode == RESULT_OK) {
             if (requestCode == 0) {
 
+                Bitmap bitmap;
 
-                Bitmap bitmap = BitmapFactory.decodeFile(getApplicationContext().getExternalFilesDir(null) + "/rondines1.png");
+                if (Offline){
+                    bitmap = BitmapFactory.decodeFile(getApplicationContext().getExternalFilesDir(null) + "/app"+numero_aletorio+numero_aletorio3+".png");
+                }else{
+                    bitmap = BitmapFactory.decodeFile(getApplicationContext().getExternalFilesDir(null) + "/rondines1.png");
+                }
 
                 registrar1.setVisibility(View.GONE);
                 Viewfoto1.setVisibility(View.VISIBLE);
@@ -421,8 +673,14 @@ public class RondinIncidenciasQr extends Menu {
             }
             if (requestCode == 1) {
 
+                Bitmap bitmap2;
 
-                Bitmap bitmap2 = BitmapFactory.decodeFile(getApplicationContext().getExternalFilesDir(null) + "/rondines2.png");
+                if (Offline){
+                    bitmap2 = BitmapFactory.decodeFile(getApplicationContext().getExternalFilesDir(null) + "/app"+numero_aletorio2+numero_aletorio+".png");
+                }else {
+                    bitmap2 = BitmapFactory.decodeFile(getApplicationContext().getExternalFilesDir(null) + "/rondines2.png");
+                }
+
 
                 Viewfoto2.setVisibility(View.VISIBLE);
                 view_foto2.setVisibility(View.VISIBLE);
@@ -436,8 +694,13 @@ public class RondinIncidenciasQr extends Menu {
 
             if (requestCode == 2) {
 
+                Bitmap bitmap3;
 
-                Bitmap bitmap3 = BitmapFactory.decodeFile(getApplicationContext().getExternalFilesDir(null) + "/rondines3.png");
+                if (Offline){
+                    bitmap3 = BitmapFactory.decodeFile(getApplicationContext().getExternalFilesDir(null) + "/app"+numero_aletorio3+numero_aletorio2+".png");
+                }else {
+                    bitmap3 = BitmapFactory.decodeFile(getApplicationContext().getExternalFilesDir(null) + "/rondines3.png");
+                }
 
                 Viewfoto3.setVisibility(View.VISIBLE);
                 view_foto3.setVisibility(View.VISIBLE);
@@ -466,8 +729,13 @@ public class RondinIncidenciasQr extends Menu {
         alertDialogBuilder
                 .setMessage("¿ Desea registrar la incidencia ?")
                 .setPositiveButton("Ok",new DialogInterface.OnClickListener() {
+                    @RequiresApi(api = Build.VERSION_CODES.O)
                     public void onClick(DialogInterface dialog, int id) {
-                        Registrar(Ids);
+                        if (Offline){
+                            RegistrarOffline(Ids);
+                        }else{
+                            Registrar(Ids);
+                        }
                     }
                 })
                 .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
@@ -478,6 +746,167 @@ public class RondinIncidenciasQr extends Menu {
                         finish();
                     }
                 }).create().show();
+    }
+
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public void RegistrarOffline(final int Id){
+
+
+        String nombre1 = "app"+numero_aletorio+numero_aletorio3+".png";
+        String nombre2 = "app"+numero_aletorio2+numero_aletorio+".png";
+        String nombre3 = "app"+numero_aletorio3+numero_aletorio2+".png";
+
+
+        //Registrar fotos en SQLite
+        switch (Id){
+            case 2:
+                ima1=nombre1;
+                ima2="";
+                ima3="";
+
+                ContentValues val_img1 =  ValuesImagen(ima1, Conf.getPin()+"/incidencias/"+ima1.trim(), rutaImagen1);
+                Uri uri = getContentResolver().insert(UrisContentProvider.URI_CONTENIDO_FOTOS_OFFLINE, val_img1);
+
+                break;
+            case 3:
+                ima1=nombre1;
+                ima2=nombre2;
+                ima3="";
+
+                ContentValues val_img2 =  ValuesImagen(ima1, Conf.getPin()+"/incidencias/"+ima1.trim(), rutaImagen1);
+                Uri uri2 = getContentResolver().insert(UrisContentProvider.URI_CONTENIDO_FOTOS_OFFLINE, val_img2);
+
+                ContentValues val_img3 =  ValuesImagen(ima2, Conf.getPin()+"/incidencias/"+ima2.trim(), rutaImagen2);
+                Uri uri3 = getContentResolver().insert(UrisContentProvider.URI_CONTENIDO_FOTOS_OFFLINE, val_img3);
+
+                break;
+            case 4:
+                ima1=nombre1;
+                ima2=nombre2;
+                ima3=nombre3;
+
+                ContentValues val_img4 =  ValuesImagen(ima1, Conf.getPin()+"/incidencias/"+ima1.trim(), rutaImagen1);
+                Uri uri4 = getContentResolver().insert(UrisContentProvider.URI_CONTENIDO_FOTOS_OFFLINE, val_img4);
+
+                ContentValues val_img5 =  ValuesImagen(ima2, Conf.getPin()+"/incidencias/"+ima2.trim(), rutaImagen2);
+                Uri uri5 = getContentResolver().insert(UrisContentProvider.URI_CONTENIDO_FOTOS_OFFLINE, val_img5);
+
+                ContentValues val_img6 =  ValuesImagen(ima3, Conf.getPin()+"/incidencias/"+ima3.trim(), rutaImagen3);
+                Uri uri6 = getContentResolver().insert(UrisContentProvider.URI_CONTENIDO_FOTOS_OFFLINE, val_img6);
+                break;
+            default:
+                ima1="";
+                ima2="";
+                ima3="";
+                break;
+        }
+
+        LocalDateTime hoy = LocalDateTime.now();
+
+        int year = hoy.getYear();
+        int month = hoy.getMonthValue();
+        int day = hoy.getDayOfMonth();
+        int hour = hoy.getHour();
+        int minute = hoy.getMinute();
+        int second =hoy.getSecond();
+
+
+        String fecha = "";
+
+        //Poner el cero cuando el mes o dia es menor a 10
+        if (day < 10 || month < 10){
+            if (month < 10 && day >= 10){
+                fecha = year+"-0"+month+"-"+day;
+            } else if (month >= 10 && day < 10){
+                fecha = year+"-"+month+"-0"+day;
+            }else if (month < 10 && day < 10){
+                fecha = year+"-0"+month+"-0"+day;
+            }
+        }else {
+            fecha = year+"-"+month+"-"+day;
+        }
+
+        String hora = "";
+
+        if (hour < 10 || minute < 10){
+            if (hour < 10 && minute >=10){
+                hora = "0"+hour+":"+minute;
+            }else if (hour >= 10 && minute < 10){
+                hora = hour+":0"+minute;
+            }else if (hour < 10 && minute < 10){
+                hora = "0"+hour+":0"+minute;
+            }
+        }else {
+            hora = hour+":"+minute;
+        }
+
+
+        ContentValues values = new ContentValues();
+        values.put("id_residencial", Conf.getResid().trim());
+        try {
+            values.put("id_rondin", ja1.getString(5));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        values.put("id_usuario", Conf.getUsu().trim());
+        values.put("id_tipo", 1);
+        try {
+            values.put("id_ubicacion", ja1.getString(0));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        values.put("dia", fecha);
+        values.put("hora", hora);
+        values.put("detalle", Comentarios.getText().toString().trim());
+        values.put("accion", Accion.getText().toString().trim());
+        values.put("foto1", ima1);
+        values.put("foto2", ima2);
+        values.put("foto3", ima3);
+        values.put("club", 0);
+        values.put("estatus", 1);
+        values.put("sqliteEstatus", 1);
+
+        Uri uri = getContentResolver().insert(UrisContentProvider.URI_CONTENIDO_RONDINESINCIDENCIAS,values);
+
+        String idUri = uri.getLastPathSegment();
+
+        int insertar = Integer.parseInt(idUri);
+
+        if (insertar != -1){
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(RondinIncidenciasQr.this);
+            alertDialogBuilder.setTitle("Alerta");
+            alertDialogBuilder
+                    .setMessage("Registro de incidencia exitosa en modo offline")
+                    .setPositiveButton("Ok",new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            Intent i = new Intent(getApplicationContext(), Rondines.class);
+                            startActivity(i);
+                            finish();
+                        }
+                    }).create().show();
+        }else{
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(RondinIncidenciasQr.this);
+            alertDialogBuilder.setTitle("Alerta");
+            alertDialogBuilder
+                    .setMessage("Registro de incidencia no exitoso en modo offline")
+                    .setPositiveButton("Ok",new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            Intent i = new Intent(getApplicationContext(), Rondines.class);
+                            startActivity(i);
+                            finish();
+                        }
+                    }).create().show();
+        }
+
+    }
+
+    public ContentValues ValuesImagen(String nombre, String rutaFirebase, String rutaDispositivo){
+        ContentValues values = new ContentValues();
+        values.put("titulo", nombre);
+        values.put("direccionFirebase", rutaFirebase);
+        values.put("rutaDispositivo", rutaDispositivo);
+        return values;
     }
 
     public void Registrar(final int Id){

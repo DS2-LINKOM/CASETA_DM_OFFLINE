@@ -50,7 +50,7 @@ public class Menu extends AppCompatActivity implements PopupMenu.OnMenuItemClick
             //Log.d("MIAPP", "Estás offline");
         }*/
 
-        if (Global_info.getINTERNET().equals("Si")) {
+        /*if (Global_info.getINTERNET().equals("Si")) {
             /// Log.d("MIAPP", "Estás online");
         } else {
             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(Menu.this);
@@ -63,7 +63,7 @@ public class Menu extends AppCompatActivity implements PopupMenu.OnMenuItemClick
                         }
                     }).create().show();
             //Log.d("MIAPP", "Estás offline");
-        }
+        }*/
 
     }
 

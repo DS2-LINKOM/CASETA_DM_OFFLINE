@@ -2,9 +2,9 @@ package mx.linkom.caseta_dm_offline;
 
 import android.app.ActivityManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -19,6 +19,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.android.volley.AuthFailureError;
@@ -42,7 +43,7 @@ import java.util.Map;
 
 import mx.linkom.caseta_dm_offline.adaptadores.ModuloClassGrid;
 import mx.linkom.caseta_dm_offline.adaptadores.adaptador_Modulo;
-import mx.linkom.caseta_dm_offline.offline.Database.Database;
+import mx.linkom.caseta_dm_offline.offline.Database.UrisContentProvider;
 import mx.linkom.caseta_dm_offline.offline.Global_info;
 import mx.linkom.caseta_dm_offline.offline.Servicios.testInternet;
 
@@ -55,6 +56,9 @@ public class DashboardActivity extends  mx.linkom.caseta_dm_offline.Menu {
     String var1,var2,var3,var4,var5;
     String var6,var7,var8,var9,var10;
     LinearLayout rlVistantes,rlTrabajadores;
+
+    ImageView iconoInternet;
+    boolean Offline = false;
 
     private GridView gridList,gridList2;
 
@@ -80,12 +84,46 @@ public class DashboardActivity extends  mx.linkom.caseta_dm_offline.Menu {
         rlVistantes = (LinearLayout)findViewById(R.id.rlVistantes);
         rlTrabajadores = (LinearLayout)findViewById(R.id.rlTrabajadores);
         nombre.setText(Conf.getNomResi());
+        iconoInternet = (ImageView) findViewById(R.id.iconoInternetDashboard);
+
+        if (Global_info.getINTERNET().equals("Si")){
+            iconoInternet.setImageResource(R.drawable.ic_online);
+            Offline = false;
+        }else{
+            iconoInternet.setImageResource(R.drawable.ic_offline);
+            Offline = true;
+        }
 
         //Iniciar el servicio
         if(!foregroundServiceRunning()) { //Solo se va a ejecutar el servicio si es que aún no se esta ejecutando aun
             Intent serviceIntent = new Intent(this, testInternet.class);
             startForegroundService(serviceIntent);
         }
+
+        iconoInternet.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (Offline){
+                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(DashboardActivity.this);
+                    alertDialogBuilder.setTitle("Alerta");
+                    alertDialogBuilder
+                            .setMessage("Aplicación funcionando en modo offline \n\nDatos actualizados hasta: \n\n"+Global_info.getULTIMA_ACTUALIZACION())
+                            .setPositiveButton("Ok",new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                }
+                            }).create().show();
+                }else {
+                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(DashboardActivity.this);
+                    alertDialogBuilder.setTitle("Alerta");
+                    alertDialogBuilder
+                            .setMessage("Aplicación funcionando en modo online \n\nDatos actualizados para funcionamiento en modo offline hasta: \n\n"+Global_info.getULTIMA_ACTUALIZACION())
+                            .setPositiveButton("Ok",new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                }
+                            }).create().show();
+                }
+            }
+        });
 
     }
 
@@ -104,6 +142,7 @@ public class DashboardActivity extends  mx.linkom.caseta_dm_offline.Menu {
     }
 
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onStart() {
         super.onStart();
@@ -158,19 +197,16 @@ public class DashboardActivity extends  mx.linkom.caseta_dm_offline.Menu {
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public void menuOffline(){
 
-        Database base = new Database(getApplicationContext());
-        SQLiteDatabase bd = base.getWritableDatabase();
-
         try {
-            Cursor cursoAppCaseta = null;
-
-            cursoAppCaseta = bd.rawQuery("SELECT * FROM app_caseta" , null);
+            Cursor cursoAppCaseta = getContentResolver().query(UrisContentProvider.URI_CONTENIDO_APP_CASETA, null, null, null);
 
             ja3 = new JSONArray();
 
             if (cursoAppCaseta.moveToFirst()){
+                System.out.println("indice " + cursoAppCaseta.getString(0));
                 ja3.put(cursoAppCaseta.getString(0));
                 ja3.put(cursoAppCaseta.getString(1));
                 ja3.put(cursoAppCaseta.getString(2));
@@ -197,7 +233,7 @@ public class DashboardActivity extends  mx.linkom.caseta_dm_offline.Menu {
             System.out.println(ex.toString());
             Toast.makeText(getApplicationContext(), "Usuario y/o Contraseña Incorrectos", Toast.LENGTH_LONG).show();
         }finally {
-            bd.close();
+           // bd.close();
         }
 
     }

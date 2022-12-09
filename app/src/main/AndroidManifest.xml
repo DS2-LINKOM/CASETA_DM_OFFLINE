@@ -653,6 +653,11 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths"/>
         </provider>
+
+        <provider
+            android:authorities="mx.linkom.caseta_dm_offline"
+            android:name=".offline.Database.ContentProvider"
+            android:exported="false"/>
     </application>
 
 </manifest>

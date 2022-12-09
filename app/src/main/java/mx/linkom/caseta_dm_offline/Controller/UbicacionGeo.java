@@ -1,6 +1,11 @@
 package mx.linkom.caseta_dm_offline.Controller;
 
+import static solar.blaz.date.week.WeekDatePicker.TAG;
+
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -10,6 +15,7 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.TextView;
 
+import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 
 import com.android.volley.AuthFailureError;
@@ -23,6 +29,7 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONArray;
 import org.json.JSONException;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -32,6 +39,9 @@ import mx.linkom.caseta_dm_offline.R;
 import mx.linkom.caseta_dm_offline.RondinInfoActivity;
 import mx.linkom.caseta_dm_offline.adaptadores.ListasClassGrid;
 import mx.linkom.caseta_dm_offline.adaptadores.adaptador_Modulo;
+import mx.linkom.caseta_dm_offline.offline.Database.Database;
+import mx.linkom.caseta_dm_offline.offline.Database.UrisContentProvider;
+import mx.linkom.caseta_dm_offline.offline.Global_info;
 
 public class UbicacionGeo extends Fragment {
 
@@ -45,6 +55,7 @@ public class UbicacionGeo extends Fragment {
     }
 
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -52,8 +63,94 @@ public class UbicacionGeo extends Fragment {
 
         Conf = new Configuracion(getActivity());
         gridList = (GridView) view.findViewById(R.id.gridList);
-        horarios();
+
+        if (Global_info.getINTERNET().equals("Si")){
+            horarios();
+        }else if (Global_info.getINTERNET().equals("No")){
+            horariosOffline();
+        }
+
         return view;
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public void horariosOffline() {
+
+        try {
+            Cursor cursorUbiGeo = null;
+
+            LocalDateTime hoy = LocalDateTime.now();
+
+            int year = hoy.getYear();
+            int month = hoy.getMonthValue();
+            int day = hoy.getDayOfMonth();
+
+            String fecha = "";
+
+            //Poner el cero cuando el mes o dia es menor a 10
+            if (day < 10 || month < 10){
+                if (month < 10 && day >= 10){
+                    fecha = year+"-0"+month+"-"+day;
+                } else if (month >= 10 && day < 10){
+                    fecha = year+"-"+month+"-0"+day;
+                }else if (month < 10 && day < 10){
+                    fecha = year+"-0"+month+"-0"+day;
+                }
+            }else {
+                fecha = year+"-"+month+"-"+day;
+            }
+
+
+            String usuario = Conf.getUsu().trim();
+            String id_residencial = Conf.getResid().trim();
+
+            LocalDateTime hoy2 = hoy.plusMinutes(30);
+
+
+            int hour = hoy2.getHour();
+            int minute = hoy2.getMinute();
+
+            String hora = "";
+
+            if (hour < 10 || minute < 10){
+                if (hour < 10 && minute >=10){
+                    hora = "0"+hour+":"+minute;
+                }else if (hour >= 10 && minute < 10){
+                    hora = hour+":0"+minute;
+                }else if (hour < 10 && minute < 10){
+                    hora = "0"+hour+":0"+minute;
+                }
+            }else {
+                hora = hour+":"+minute;
+            }
+
+            System.out.println("SELECT ubi.id, ubi.hora, ubis.nombre, dia.id, dia.dia, rondin.id, rondin.nombre FROM rondines_ubicaciones as ubi, rondines_dia as dia, rondines as rondin, ubicaciones as ubis WHERE ubi.id_usuario="+"'"+usuario+"'"+" and ubi.id_rondin=dia.id_rondin and ubi.id_rondin=rondin.id and dia.dia="+"'"+fecha+"'"+" and ubi.id_residencial="+"'"+id_residencial+"'"+" and ubi.hora<="+"'"+hora+"'"+" and ubis.id=ubi.id_ubicacion and NOT EXISTS (SELECT * FROM rondines_dtl WHERE rondines_dtl.id_ubicaciones=ubi.id and rondines_dtl.id_dia=dia.id and rondines_dtl.id_rondin=rondin.id)");
+
+            String parametros[] = {usuario, fecha, id_residencial, hora};
+
+            cursorUbiGeo = getActivity().getContentResolver().query(UrisContentProvider.URI_CONTENIDO_RONDINESUBICACIONES, null, null, parametros, null);
+
+            ja1 = new JSONArray();
+
+            if (cursorUbiGeo.moveToFirst()){
+                do {
+                    ja1.put(cursorUbiGeo.getString(0));
+                    ja1.put(cursorUbiGeo.getString(1));
+                    ja1.put(cursorUbiGeo.getString(2));
+                    ja1.put(cursorUbiGeo.getString(3));
+                    ja1.put(cursorUbiGeo.getString(4));
+                    ja1.put(cursorUbiGeo.getString(5));
+                    ja1.put(cursorUbiGeo.getString(6));
+                }while (cursorUbiGeo.moveToNext());
+
+            }
+
+            cursorUbiGeo.close();
+
+            llenado();
+        }catch (Exception ex){
+            System.out.println(ex.toString());
+        }
     }
 
 
@@ -133,6 +230,7 @@ public class UbicacionGeo extends Fragment {
                         @Override
                         public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
 
+                            Log.e(TAG, "Id de rondin: "+id);
 
                             int posicion=position*7;
                             try {

@@ -282,14 +282,14 @@ public class PreEntradasQrActivity extends mx.linkom.caseta_dm_offline.Menu {
 
     String [] segundo = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j",
             "k", "l", "m","n","o","p","q","r","s","t","u","v","w", "x","y","z" };
-    int numRandonsegun = (int) Math.round(Math.random() * 26 ) ;
+    int numRandonsegun = (int) Math.round(Math.random() * 25 ) ;
 
     Random tercero = new Random();
     int tercer= tercero.nextInt(9);
 
     String [] cuarto = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j",
             "k", "l", "m","n","o","p","q","r","s","t","u","v","w", "x","y","z" };
-    int numRandoncuart = (int) Math.round(Math.random() * 26 ) ;
+    int numRandoncuart = (int) Math.round(Math.random() * 25 ) ;
 
     String numero_aletorio=prime+segundo[numRandonsegun]+tercer+cuarto[numRandoncuart];
 
@@ -300,14 +300,14 @@ public class PreEntradasQrActivity extends mx.linkom.caseta_dm_offline.Menu {
 
     String [] segundo2 = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j",
             "k", "l", "m","n","o","p","q","r","s","t","u","v","w", "x","y","z" };
-    int numRandonsegun2 = (int) Math.round(Math.random() * 26 ) ;
+    int numRandonsegun2 = (int) Math.round(Math.random() * 25 ) ;
 
     Random tercero2 = new Random();
     int tercer2= tercero2.nextInt(9);
 
     String [] cuarto2 = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j",
             "k", "l", "m","n","o","p","q","r","s","t","u","v","w", "x","y","z" };
-    int numRandoncuart2 = (int) Math.round(Math.random() * 26 ) ;
+    int numRandoncuart2 = (int) Math.round(Math.random() * 25 ) ;
 
     String numero_aletorio2=prime2+segundo2[numRandonsegun2]+tercer2+cuarto2[numRandoncuart2];
 
@@ -318,14 +318,14 @@ public class PreEntradasQrActivity extends mx.linkom.caseta_dm_offline.Menu {
 
     String [] segundo3= {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j",
             "k", "l", "m","n","o","p","q","r","s","t","u","v","w", "x","y","z" };
-    int numRandonsegun3 = (int) Math.round(Math.random() * 26 ) ;
+    int numRandonsegun3 = (int) Math.round(Math.random() * 25 ) ;
 
     Random tercero3 = new Random();
     int tercer3= tercero3.nextInt(9);
 
     String [] cuarto3 = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j",
             "k", "l", "m","n","o","p","q","r","s","t","u","v","w", "x","y","z" };
-    int numRandoncuart3 = (int) Math.round(Math.random() * 26 ) ;
+    int numRandoncuart3 = (int) Math.round(Math.random() * 25 ) ;
 
     String numero_aletorio3=prime3+segundo3[numRandonsegun3]+tercer3+cuarto3[numRandoncuart3];
 

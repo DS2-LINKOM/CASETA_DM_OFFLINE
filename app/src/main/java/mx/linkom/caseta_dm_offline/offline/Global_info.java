@@ -1,13 +1,16 @@
 package mx.linkom.caseta_dm_offline.offline;
 
 import android.app.Application;
+import android.net.Uri;
 
 public class Global_info extends Application {
     private static boolean INTERNET_DISPOSITIVO = false;
     private static int SEGUNDOS = 0;
     private static String ULTIMA_ACTUALIZACION = "No se ha registrado ninguna actualización";
     private static String INTERNET = "Si";
-    private static String URL = "http://192.168.7.106/android/demoCaseta/";
+    //private static String URL = "http://192.168.7.105/android/demoCaseta/";
+    private static String URL = "https://demoarboledas.privadaarboledas.net/plataforma/casetaV2/controlador/CC/off-line/";
+
 
     public static String getINTERNET() {
         return INTERNET;

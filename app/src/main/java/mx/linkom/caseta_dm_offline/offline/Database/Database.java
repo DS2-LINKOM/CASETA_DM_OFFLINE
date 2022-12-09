@@ -250,15 +250,4 @@ public class Database extends SQLiteOpenHelper {
         db.execSQL(ubicaciones);
         db.execSQL(ubicaciones_qr);
     }
-
-    public void RegistrarImagen(String nombre, String rutaFirebase, String rutaDispositivo, SQLiteDatabase db){
-
-        ContentValues values = new ContentValues();
-        values.put("titulo", nombre);
-        values.put("direccionFirebase", rutaFirebase);
-        values.put("rutaDispositivo", rutaDispositivo);
-
-        db.insert("fotosOffline", null, values);
-
-    }
 }

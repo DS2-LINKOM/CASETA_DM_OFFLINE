@@ -2,9 +2,13 @@ package mx.linkom.caseta_dm_offline;
 
 import android.Manifest;
 
+import android.app.Activity;
+import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.InputFilter;
@@ -17,9 +21,12 @@ import android.view.View;
 import android.webkit.URLUtil;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 
@@ -41,8 +48,12 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+
+import mx.linkom.caseta_dm_offline.offline.Database.UrisContentProvider;
+import mx.linkom.caseta_dm_offline.offline.Global_info;
 
 public class RondinInfoQrActivity extends mx.linkom.caseta_dm_offline.Menu {
 
@@ -58,7 +69,10 @@ public class RondinInfoQrActivity extends mx.linkom.caseta_dm_offline.Menu {
     Button btnLector;
     LinearLayout qr;
     Button Incidencia;
+    boolean Offline = false;
+    ImageView iconoInternet;
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,6 +89,40 @@ public class RondinInfoQrActivity extends mx.linkom.caseta_dm_offline.Menu {
         qr = (LinearLayout) findViewById(R.id.qr);
 
         Incidencia = (Button) findViewById(R.id.btnIncidencia);
+        iconoInternet = (ImageView) findViewById(R.id.iconoInternetRondinInfoQr);
+
+        if (Global_info.getINTERNET().equals("Si")){
+            Offline = false;
+            iconoInternet.setImageResource(R.drawable.ic_online);
+        }else {
+            Offline = true;
+            iconoInternet.setImageResource(R.drawable.ic_offline);
+        }
+
+        iconoInternet.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (Offline){
+                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(RondinInfoQrActivity.this);
+                    alertDialogBuilder.setTitle("Alerta");
+                    alertDialogBuilder
+                            .setMessage("Aplicación funcionando en modo offline \n\nDatos actualizados hasta: \n\n"+Global_info.getULTIMA_ACTUALIZACION())
+                            .setPositiveButton("Ok",new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                }
+                            }).create().show();
+                }else {
+                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(RondinInfoQrActivity.this);
+                    alertDialogBuilder.setTitle("Alerta");
+                    alertDialogBuilder
+                            .setMessage("Aplicación funcionando en modo online \n\nDatos actualizados para funcionamiento en modo offline hasta: \n\n"+Global_info.getULTIMA_ACTUALIZACION())
+                            .setPositiveButton("Ok",new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                }
+                            }).create().show();
+                }
+            }
+        });
 
         Incidencia.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -91,7 +139,12 @@ public class RondinInfoQrActivity extends mx.linkom.caseta_dm_offline.Menu {
                 camara.setVisibility(View.VISIBLE);
             }});
         initQR();
-        rondin();
+
+        if (Offline){
+            rondinOffline();
+        }else {
+            rondin();
+        }
     }
 
 
@@ -156,6 +209,7 @@ public class RondinInfoQrActivity extends mx.linkom.caseta_dm_offline.Menu {
             }
 
 
+            @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void receiveDetections(Detector.Detections<Barcode> detections) {
                 final SparseArray<Barcode> barcodes = detections.getDetectedItems();
@@ -176,12 +230,20 @@ public class RondinInfoQrActivity extends mx.linkom.caseta_dm_offline.Menu {
                         if (URLUtil.isValidUrl(token)) {
 
                             Conf.setQRondines(token);
-                            Registrar();
+                            if (Offline){
+                                RegistrarOffline();
+                            }else{
+                                Registrar();
+                            }
 
                         } else {
 
                             Conf.setQRondines(token);
-                            Registrar();
+                            if (Offline){
+                                RegistrarOffline();
+                            }else{
+                                Registrar();
+                            }
 
                         }
 
@@ -205,6 +267,85 @@ public class RondinInfoQrActivity extends mx.linkom.caseta_dm_offline.Menu {
             }
         });
     }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public void rondinOffline() {
+
+        LocalDateTime hoy = LocalDateTime.now();
+
+        int year = hoy.getYear();
+        int month = hoy.getMonthValue();
+        int day = hoy.getDayOfMonth();
+
+        String fecha = "";
+
+        //Poner el cero cuando el mes o dia es menor a 10
+        if (day < 10 || month < 10){
+            if (month < 10 && day >= 10){
+                fecha = year+"-0"+month+"-"+day;
+            } else if (month >= 10 && day < 10){
+                fecha = year+"-"+month+"-0"+day;
+            }else if (month < 10 && day < 10){
+                fecha = year+"-0"+month+"-0"+day;
+            }
+        }else {
+            fecha = year+"-"+month+"-"+day;
+        }
+
+        LocalDateTime hoy2 = hoy.plusMinutes(30);
+
+
+        int hour = hoy2.getHour();
+        int minute = hoy2.getMinute();
+
+        String hora = "";
+
+        if (hour < 10 || minute < 10){
+            if (hour < 10 && minute >=10){
+                hora = "0"+hour+":"+minute;
+            }else if (hour >= 10 && minute < 10){
+                hora = hour+":0"+minute;
+            }else if (hour < 10 && minute < 10){
+                hora = "0"+hour+":0"+minute;
+            }
+        }else {
+            hora = hour+":"+minute;
+        }
+
+        String id = Conf.getRondin().trim();
+        String usuario = Conf.getUsu().trim();
+        String dia = fecha;
+        String id_residencial = Conf.getResid().trim();
+        String tiempo = hora;
+
+        String parametros[] = {id, usuario, dia, id_residencial, tiempo};
+
+        Log.e("error", "SELECT ubi.id, ubi.hora, ubis.nombre, dia.id, dia.dia, rondin.id, rondin.nombre, ubis.qr FROM rondines_ubicaciones_qr as ubi, rondines_dia_qr as dia, rondines_qr as rondin, ubicaciones_qr as ubis WHERE ubi.id="+"'"+id+"'"+" and ubi.id_usuario="+"'"+usuario+"'"+" and ubi.id_rondin=dia.id_rondin and ubi.id_rondin=rondin.id and dia.dia="+"'"+dia+"'"+" and ubi.id_residencial="+"'"+id_residencial+"'"+" and ubi.hora<="+"'"+tiempo+"'"+" and ubis.id=ubi.id_ubicacion and NOT EXISTS (SELECT * FROM rondines_dtl_qr WHERE rondines_dtl_qr.id_ubicaciones=ubi.id and rondines_dtl_qr.id_dia=dia.id and rondines_dtl_qr.id_rondin=rondin.id)");
+
+        Cursor cursor = getContentResolver().query(UrisContentProvider.URI_CONTENIDO_RONDINESDIAQR, null, null, parametros, null);
+
+        ja1 = new JSONArray();
+
+        if (cursor.moveToFirst()){
+            ja1.put(cursor.getString(0));
+            ja1.put(cursor.getString(1));
+            ja1.put(cursor.getString(2));
+            ja1.put(cursor.getString(3));
+            ja1.put(cursor.getString(4));
+            ja1.put(cursor.getString(5));
+            ja1.put(cursor.getString(6));
+            ja1.put(cursor.getString(7));
+
+
+            Nombre.setText(cursor.getString(6));
+            Hora.setText(cursor.getString(1));
+            Ubicacion.setText(cursor.getString(2));
+        }
+
+        cursor.close();
+
+    }
+
 
     public void rondin() {
         String URL = "https://demoarboledas.privadaarboledas.net/plataforma/casetaV2/controlador/CC/rondines_qr_2.php?bd_name="+Conf.getBd()+"&bd_user="+Conf.getBdUsu()+"&bd_pwd="+Conf.getBdCon();
@@ -247,6 +388,148 @@ public class RondinInfoQrActivity extends mx.linkom.caseta_dm_offline.Menu {
         };
         requestQueue.add(stringRequest);
     }
+
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public void RegistrarOffline(){
+
+
+
+        try {
+
+            if(ja1.getString(7).equals(Conf.getQRondines())){
+
+                LocalDateTime hoy = LocalDateTime.now();
+
+                int year = hoy.getYear();
+                int month = hoy.getMonthValue();
+                int day = hoy.getDayOfMonth();
+                int hour = hoy.getHour();
+                int minute = hoy.getMinute();
+
+                String fecha = "";
+
+                //Poner el cero cuando el mes o dia es menor a 10
+                if (day < 10 || month < 10){
+                    if (month < 10 && day >= 10){
+                        fecha = year+"-0"+month+"-"+day;
+                    } else if (month >= 10 && day < 10){
+                        fecha = year+"-"+month+"-0"+day;
+                    }else if (month < 10 && day < 10){
+                        fecha = year+"-0"+month+"-0"+day;
+                    }
+                }else {
+                    fecha = year+"-"+month+"-"+day;
+                }
+
+                String hora = "";
+
+                if (hour < 10 || minute < 10){
+                    if (hour < 10 && minute >=10){
+                        hora = "0"+hour+":"+minute;
+                    }else if (hour >= 10 && minute < 10){
+                        hora = hour+":0"+minute;
+                    }else if (hour < 10 && minute < 10){
+                        hora = "0"+hour+":0"+minute;
+                    }
+                }else {
+                    hora = hour+":"+minute;
+                }
+
+
+                ContentValues values = new ContentValues();
+                values.put("id_residencial", Integer.parseInt(Conf.getResid().trim()));
+                values.put("id_rondin", Integer.parseInt(ja1.getString(5)));
+                values.put("id_dia", Integer.parseInt(ja1.getString(3)));
+                values.put("id_ubicaciones", Integer.parseInt(ja1.getString(0)));
+                values.put("dia", fecha);
+                values.put("hora", hora);
+                values.put("estatus", 1);
+                values.put("sqliteEstatus", 1);
+
+
+                Uri uri = getContentResolver().insert(UrisContentProvider.URI_CONTENIDO_RONDINESDTLQR,values);
+                String idUri = uri.getLastPathSegment();
+                int insertar = Integer.parseInt(idUri);
+
+                if (insertar != -1){
+                    //Fue correcto
+                    new Thread(){
+                        @Override
+                        public void run() {
+                            RondinInfoQrActivity.this.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(RondinInfoQrActivity.this);
+                                    alertDialogBuilder.setTitle("Alerta");
+                                    alertDialogBuilder
+                                            .setMessage("Registro de asistencia exitoso en modo offline")
+                                            .setPositiveButton("Ok",new DialogInterface.OnClickListener() {
+                                                public void onClick(DialogInterface dialog, int id) {
+                                                    Intent i = new Intent(getApplicationContext(), mx.linkom.caseta_dm_offline.Rondines.class);
+                                                    startActivity(i);
+                                                    finish();
+                                                }
+                                            }).create().show();
+                                }
+                            });
+                        }
+                    }.start();
+                }else {
+                    //Error al registrar
+                    new Thread(){
+                        @Override
+                        public void run() {
+                            RondinInfoQrActivity.this.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(RondinInfoQrActivity.this);
+                                    alertDialogBuilder.setTitle("Alerta");
+                                    alertDialogBuilder
+                                            .setMessage("Registro de asistencia no exitoso en modo offline")
+                                            .setPositiveButton("Ok",new DialogInterface.OnClickListener() {
+                                                public void onClick(DialogInterface dialog, int id) {
+                                                    Intent i = new Intent(getApplicationContext(), mx.linkom.caseta_dm_offline.Rondines.class);
+                                                    startActivity(i);
+                                                    finish();
+                                                }
+                                            }).create().show();
+                                }
+                            });
+                        }
+                    }.start();
+                }
+
+            }else{
+
+                new Thread(){
+                    @Override
+                    public void run() {
+                        RondinInfoQrActivity.this.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(RondinInfoQrActivity.this);
+                                alertDialogBuilder.setTitle("Alerta");
+                                alertDialogBuilder
+                                        .setMessage("El qr no corresponde a la ubicación")
+                                        .setPositiveButton("Ok",new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int id) {
+                                                Intent i = new Intent(getApplicationContext(), Rondines.class);
+                                                startActivity(i);
+                                                finish();
+                                            }
+                                        }).create().show();
+                            }
+                        });
+                    }
+                }.start();
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+    }
+
 
 
     public void Registrar(){

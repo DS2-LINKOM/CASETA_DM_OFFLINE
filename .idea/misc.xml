@@ -4,6 +4,17 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/Users/Andrea/AndroidStudioProjects/CASETA/CASETA_DM_OFFLINE/app/src/main/res/layout/activity_main.xml" value="0.2" />
+        <entry key="..\:/Users/likom/Desktop/Android/OFFLINE/CASETA_DM_OFFLINE/app/src/main/res/layout/activity_rondines.xml" value="0.20416666666666666" />
+        <entry key="..\:/Users/likom/Desktop/Android/OFFLINE/CON PROVIDER/CASETA_DM_OFFLINE/app/src/main/res/layout/activity_dashboard.xml" value="0.33220338983050846" />
+        <entry key="..\:/Users/likom/Desktop/Android/OFFLINE/CON PROVIDER/CASETA_DM_OFFLINE/app/src/main/res/layout/activity_incidencia.xml" value="0.33" />
+        <entry key="..\:/Users/likom/Desktop/Android/OFFLINE/CON PROVIDER/CASETA_DM_OFFLINE/app/src/main/res/layout/activity_listas.xml" value="0.20416666666666666" />
+        <entry key="..\:/Users/likom/Desktop/Android/OFFLINE/CON PROVIDER/CASETA_DM_OFFLINE/app/src/main/res/layout/activity_reportes.xml" value="0.5" />
+        <entry key="..\:/Users/likom/Desktop/Android/OFFLINE/CON PROVIDER/CASETA_DM_OFFLINE/app/src/main/res/layout/activity_rondines.xml" value="0.20416666666666666" />
+        <entry key="..\:/Users/likom/Desktop/Android/OFFLINE/CON PROVIDER/CASETA_DM_OFFLINE/app/src/main/res/layout/activity_rondines_lista.xml" value="0.33" />
+        <entry key="..\:/Users/likom/Desktop/Android/OFFLINE/CON PROVIDER/CASETA_DM_OFFLINE/app/src/main/res/layout/activity_rondines_qr.xml" value="0.20416666666666666" />
+        <entry key="..\:/Users/likom/Desktop/Android/OFFLINE/CON PROVIDER/CASETA_DM_OFFLINE/app/src/main/res/layout/activity_rondinincidencias.xml" value="0.5" />
+        <entry key="..\:/Users/likom/Desktop/Android/OFFLINE/CON PROVIDER/CASETA_DM_OFFLINE/app/src/main/res/layout/activity_rondinincidencias_qr.xml" value="0.33" />
+        <entry key="..\:/Users/likom/Desktop/Android/OFFLINE/CON PROVIDER/CASETA_DM_OFFLINE/app/src/main/res/menu/menu_main.xml" value="0.33" />
       </map>
     </option>
   </component>

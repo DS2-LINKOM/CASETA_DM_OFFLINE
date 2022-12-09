@@ -123,14 +123,14 @@ public class EntregaActivity extends mx.linkom.caseta_dm_offline.Menu {
 
     String[] segundo = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j",
             "k", "l", "m","n","o","p","q","r","s","t","u","v","w", "x","y","z" };
-    int numRandonsegun = (int) Math.round(Math.random() * 26 ) ;
+    int numRandonsegun = (int) Math.round(Math.random() * 25 ) ;
 
     Random tercero = new Random();
     int tercer= tercero.nextInt(9);
 
     String[] cuarto = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j",
             "k", "l", "m","n","o","p","q","r","s","t","u","v","w", "x","y","z" };
-    int numRandoncuart = (int) Math.round(Math.random() * 26 ) ;
+    int numRandoncuart = (int) Math.round(Math.random() * 25 ) ;
 
     String numero_aletorio=prime+segundo[numRandonsegun]+tercer+cuarto[numRandoncuart];
 

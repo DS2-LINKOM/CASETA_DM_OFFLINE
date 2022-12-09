@@ -62,6 +62,7 @@ import java.util.Random;
 
 import id.zelory.compressor.Compressor;
 import mx.linkom.caseta_dm_offline.offline.Database.Database;
+import mx.linkom.caseta_dm_offline.offline.Database.UrisContentProvider;
 import mx.linkom.caseta_dm_offline.offline.Global_info;
 
 
@@ -83,6 +84,8 @@ public class IncidenciaActivity  extends mx.linkom.caseta_dm_offline.Menu{
     EditText Comentarios,Accion;
     Uri uri_img,uri_img2,uri_img3;
     String rutaImagen1, rutaImagen2, rutaImagen3;
+    boolean Offline = false;
+    ImageView iconoInternet;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -129,12 +132,53 @@ public class IncidenciaActivity  extends mx.linkom.caseta_dm_offline.Menu{
         foto2 = (LinearLayout) findViewById(R.id.foto2);
         foto3 = (LinearLayout) findViewById(R.id.foto3);
 
+        iconoInternet = (ImageView)findViewById(R.id.iconoInternetIncidencia);
+
+        if (Global_info.getINTERNET().equals("Si")){
+            //Es online
+            Offline = false;
+            iconoInternet.setImageResource(R.drawable.ic_online);
+        }else {
+            //Es offline
+            iconoInternet.setImageResource(R.drawable.ic_offline);
+            Offline = true;
+        }
+
+        iconoInternet.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (Offline){
+                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(IncidenciaActivity.this);
+                    alertDialogBuilder.setTitle("Alerta");
+                    alertDialogBuilder
+                            .setMessage("Aplicación funcionando en modo offline \n\nDatos actualizados hasta: \n\n"+Global_info.getULTIMA_ACTUALIZACION())
+                            .setPositiveButton("Ok",new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                }
+                            }).create().show();
+                }else {
+                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(IncidenciaActivity.this);
+                    alertDialogBuilder.setTitle("Alerta");
+                    alertDialogBuilder
+                            .setMessage("Aplicación funcionando en modo online \n\nDatos actualizados para funcionamiento en modo offline hasta: \n\n"+Global_info.getULTIMA_ACTUALIZACION())
+                            .setPositiveButton("Ok",new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                }
+                            }).create().show();
+                }
+            }
+        });
 
         foto1_boton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 foto=1;
-                imgFoto();
+                if (Offline){
+                    imgFotoOffline();
+
+                }else {
+                    imgFoto();
+                }
             }
         });
 
@@ -143,7 +187,11 @@ public class IncidenciaActivity  extends mx.linkom.caseta_dm_offline.Menu{
             @Override
             public void onClick(View v) {
                 foto=2;
-                imgFoto2();
+                if (Offline){
+                    imgFoto2Offline();
+                }else {
+                    imgFoto2();
+                }
             }
         });
 
@@ -151,7 +199,11 @@ public class IncidenciaActivity  extends mx.linkom.caseta_dm_offline.Menu{
             @Override
             public void onClick(View v) {
                 foto=3;
-                imgFoto3();
+                if (Offline){
+                    imgFoto3Offline();
+                }else {
+                    imgFoto3();
+                }
             }
         });
 
@@ -166,7 +218,11 @@ public class IncidenciaActivity  extends mx.linkom.caseta_dm_offline.Menu{
             @Override
             public void onClick(View v) {
                 foto=2;
-                imgFoto2();
+                if (Offline){
+                    imgFoto2Offline();
+                }else {
+                    imgFoto2();
+                }
                 registrar2.setVisibility(View.GONE);
                 foto2.setVisibility(View.VISIBLE);
             }
@@ -183,7 +239,11 @@ public class IncidenciaActivity  extends mx.linkom.caseta_dm_offline.Menu{
             @Override
             public void onClick(View v) {
                 foto=3;
-                imgFoto3();
+                if (Offline){
+                    imgFoto3Offline();
+                }else {
+                    imgFoto3();
+                }
                 registrar3.setVisibility(View.GONE);
                 foto3.setVisibility(View.VISIBLE);
             }
@@ -232,17 +292,18 @@ public class IncidenciaActivity  extends mx.linkom.caseta_dm_offline.Menu{
     //ALETORIO
     Random primero = new Random();
     int prime= primero.nextInt(9);
+    
 
     String[] segundo = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j",
             "k", "l", "m","n","o","p","q","r","s","t","u","v","w", "x","y","z" };
-    int numRandonsegun = (int) Math.round(Math.random() * 26 ) ;
+    int numRandonsegun = (int) Math.round(Math.random() * 25 ) ;
 
     Random tercero = new Random();
     int tercer= tercero.nextInt(9);
 
     String[] cuarto = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j",
             "k", "l", "m","n","o","p","q","r","s","t","u","v","w", "x","y","z" };
-    int numRandoncuart = (int) Math.round(Math.random() * 26 ) ;
+    int numRandoncuart = (int) Math.round(Math.random() * 25 ) ;
 
     String numero_aletorio=prime+segundo[numRandonsegun]+tercer+cuarto[numRandoncuart];
 
@@ -253,14 +314,14 @@ public class IncidenciaActivity  extends mx.linkom.caseta_dm_offline.Menu{
 
     String[] segundo2 = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j",
             "k", "l", "m","n","o","p","q","r","s","t","u","v","w", "x","y","z" };
-    int numRandonsegun2 = (int) Math.round(Math.random() * 26 ) ;
+    int numRandonsegun2 = (int) Math.round(Math.random() * 25 ) ;
 
     Random tercero2 = new Random();
     int tercer2= tercero2.nextInt(9);
 
     String[] cuarto2 = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j",
             "k", "l", "m","n","o","p","q","r","s","t","u","v","w", "x","y","z" };
-    int numRandoncuart2 = (int) Math.round(Math.random() * 26 ) ;
+    int numRandoncuart2 = (int) Math.round(Math.random() * 25 ) ;
 
     String numero_aletorio2=prime2+segundo2[numRandonsegun2]+tercer2+cuarto2[numRandoncuart2];
 
@@ -271,14 +332,14 @@ public class IncidenciaActivity  extends mx.linkom.caseta_dm_offline.Menu{
 
     String[] segundo3 = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j",
             "k", "l", "m","n","o","p","q","r","s","t","u","v","w", "x","y","z" };
-    int numRandonsegun3 = (int) Math.round(Math.random() * 26 ) ;
+    int numRandonsegun3 = (int) Math.round(Math.random() * 25 ) ;
 
     Random tercero3 = new Random();
     int tercer3= tercero3.nextInt(9);
 
     String[] cuarto3 = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j",
             "k", "l", "m","n","o","p","q","r","s","t","u","v","w", "x","y","z" };
-    int numRandoncuart3 = (int) Math.round(Math.random() * 26 ) ;
+    int numRandoncuart3 = (int) Math.round(Math.random() * 25 ) ;
 
     String numero_aletorio3=prime3+segundo3[numRandonsegun3]+tercer3+cuarto3[numRandoncuart3];
 
@@ -322,6 +383,36 @@ public class IncidenciaActivity  extends mx.linkom.caseta_dm_offline.Menu{
         }
     }
 
+    public void imgFotoOffline(){
+        Intent intentCaptura = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        intentCaptura.addFlags(intentCaptura.FLAG_GRANT_READ_URI_PERMISSION);
+
+        if (intentCaptura.resolveActivity(getPackageManager()) != null) {
+
+            File foto=null;
+            try {
+                foto= new File(getApplication().getExternalFilesDir(null),"app"+numero_aletorio+numero_aletorio3+".png");
+                rutaImagen1 = foto.getAbsolutePath();
+            } catch (Exception ex) {
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(IncidenciaActivity.this);
+                alertDialogBuilder.setTitle("Alerta");
+                alertDialogBuilder
+                        .setMessage("Error al capturar la foto")
+                        .setPositiveButton("Ok",new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+
+                            }
+                        }).create().show();
+            }
+            if (foto != null) {
+
+                uri_img= FileProvider.getUriForFile(getApplicationContext(),getApplicationContext().getPackageName()+".provider",foto);
+                intentCaptura.putExtra(MediaStore.EXTRA_OUTPUT,uri_img);
+                startActivityForResult(intentCaptura, 0);
+            }
+        }
+    }
+
 
     public void imgFoto2(){
         Intent intentCaptura = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -331,6 +422,34 @@ public class IncidenciaActivity  extends mx.linkom.caseta_dm_offline.Menu{
             File foto=null;
             try {
                 foto = new File(getApplication().getExternalFilesDir(null),"incidencia2.png");
+                rutaImagen2 = foto.getAbsolutePath();
+            } catch (Exception ex) {
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(IncidenciaActivity.this);
+                alertDialogBuilder.setTitle("Alerta");
+                alertDialogBuilder
+                        .setMessage("Error al capturar la foto")
+                        .setPositiveButton("Ok",new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+
+                            }
+                        }).create().show();
+            }
+            if (foto != null) {
+                uri_img2= FileProvider.getUriForFile(getApplicationContext(),getApplicationContext().getPackageName()+".provider",foto);
+                intentCaptura.putExtra(MediaStore.EXTRA_OUTPUT,uri_img2);
+                startActivityForResult( intentCaptura, 1);
+            }
+        }
+    }
+
+    public void imgFoto2Offline(){
+        Intent intentCaptura = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        intentCaptura.addFlags(intentCaptura.FLAG_GRANT_READ_URI_PERMISSION);
+
+        if (intentCaptura.resolveActivity(getPackageManager()) != null) {
+            File foto=null;
+            try {
+                foto = new File(getApplication().getExternalFilesDir(null),"app"+numero_aletorio2+numero_aletorio+".png");
                 rutaImagen2 = foto.getAbsolutePath();
             } catch (Exception ex) {
                 AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(IncidenciaActivity.this);
@@ -382,6 +501,34 @@ public class IncidenciaActivity  extends mx.linkom.caseta_dm_offline.Menu{
     }
 
 
+    public void imgFoto3Offline(){
+        Intent intentCaptura = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        intentCaptura.addFlags(intentCaptura.FLAG_GRANT_READ_URI_PERMISSION);
+
+        if (intentCaptura.resolveActivity(getPackageManager()) != null) {
+
+            File foto=null;
+            try {
+                foto = new File(getApplication().getExternalFilesDir(null),"app"+numero_aletorio3+numero_aletorio2+".png");
+                rutaImagen3 = foto.getAbsolutePath();
+            } catch (Exception ex) {
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(IncidenciaActivity.this);
+                alertDialogBuilder.setTitle("Alerta");
+                alertDialogBuilder
+                        .setMessage("Error al capturar la foto")
+                        .setPositiveButton("Ok",new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+
+                            }
+                        }).create().show();
+            }
+            if (foto != null) {
+                uri_img3= FileProvider.getUriForFile(getApplicationContext(),getApplicationContext().getPackageName()+".provider",foto);
+                intentCaptura.putExtra(MediaStore.EXTRA_OUTPUT,uri_img3);
+                startActivityForResult( intentCaptura, 2);
+            }
+        }
+    }
 
 
     @Override
@@ -392,8 +539,13 @@ public class IncidenciaActivity  extends mx.linkom.caseta_dm_offline.Menu{
         if (resultCode == RESULT_OK) {
             if (requestCode == 0) {
 
+                Bitmap bitmap;
 
-                Bitmap bitmap = BitmapFactory.decodeFile(getApplicationContext().getExternalFilesDir(null) + "/incidencia1.png");
+                if (Offline){
+                    bitmap = BitmapFactory.decodeFile(getApplicationContext().getExternalFilesDir(null) + "/app"+numero_aletorio+numero_aletorio3+".png");
+                }else {
+                    bitmap = BitmapFactory.decodeFile(getApplicationContext().getExternalFilesDir(null) + "/incidencia1.png");
+                }
 
 
                 registrar1.setVisibility(View.GONE);
@@ -407,9 +559,14 @@ public class IncidenciaActivity  extends mx.linkom.caseta_dm_offline.Menu{
 
             }
             if (requestCode == 1) {
+                Bitmap bitmap2;
 
+                if (Offline){
+                    bitmap2 = BitmapFactory.decodeFile(getApplicationContext().getExternalFilesDir(null) + "/app"+numero_aletorio2+numero_aletorio+".png");
+                }else {
+                    bitmap2 = BitmapFactory.decodeFile(getApplicationContext().getExternalFilesDir(null) + "/incidencia2.png");
+                }
 
-                Bitmap bitmap2 = BitmapFactory.decodeFile(getApplicationContext().getExternalFilesDir(null) + "/incidencia2.png");
 
                 Viewfoto2.setVisibility(View.VISIBLE);
                 view_foto2.setVisibility(View.VISIBLE);
@@ -423,8 +580,13 @@ public class IncidenciaActivity  extends mx.linkom.caseta_dm_offline.Menu{
 
             if (requestCode == 2) {
 
+                Bitmap bitmap3;
 
-                Bitmap bitmap3 = BitmapFactory.decodeFile(getApplicationContext().getExternalFilesDir(null) + "/incidencia3.png");
+                if (Offline){
+                    bitmap3 = BitmapFactory.decodeFile(getApplicationContext().getExternalFilesDir(null) + "/app"+numero_aletorio3+numero_aletorio2+".png");
+                }else {
+                    bitmap3 = BitmapFactory.decodeFile(getApplicationContext().getExternalFilesDir(null) + "/incidencia3.png");
+                }
 
 
                 Viewfoto3.setVisibility(View.VISIBLE);
@@ -460,11 +622,11 @@ public class IncidenciaActivity  extends mx.linkom.caseta_dm_offline.Menu{
                     @RequiresApi(api = Build.VERSION_CODES.O)
                     public void onClick(DialogInterface dialog, int id) {
                         //Validar conexión a internet
-                        if (Global_info.getINTERNET().equals("Si")){
-                            Registrar(Ids);
-                        }else if (Global_info.getINTERNET().equals("No")){
+                        if (Offline){
                             pd4.show();
                             RegistrarOffline(Ids);
+                        }else{
+                            Registrar(Ids);
                         }
                     }
                 })
@@ -481,11 +643,8 @@ public class IncidenciaActivity  extends mx.linkom.caseta_dm_offline.Menu{
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void RegistrarOffline(final int Id){
 
-        String rutacarpeta = getApplication().getExternalFilesDir(Environment.DIRECTORY_PICTURES) + "/";
-
         try {
-            Database base = new Database(IncidenciaActivity.this);
-            SQLiteDatabase bd = base.getWritableDatabase();
+
             long id = 0;
 
             String nombre1 = "app"+numero_aletorio+numero_aletorio3+".png";
@@ -499,9 +658,11 @@ public class IncidenciaActivity  extends mx.linkom.caseta_dm_offline.Menu{
                     ima2="";
                     ima3="";
 
-                    GuardarImagen(nombre1, rutaImagen1, uri_img);
+                    //GuardarImagen(nombre1, rutaImagen1, uri_img);
 
-                    base.RegistrarImagen(ima1, Conf.getPin()+"/incidencias/"+ima1.trim(), rutacarpeta+nombre1, bd);
+                    ContentValues val_img1 =  ValuesImagen(ima1, Conf.getPin()+"/incidencias/"+ima1.trim(), rutaImagen1);
+                    Uri uri = getContentResolver().insert(UrisContentProvider.URI_CONTENIDO_FOTOS_OFFLINE, val_img1);
+
 
                     break;
                 case 3:
@@ -509,11 +670,14 @@ public class IncidenciaActivity  extends mx.linkom.caseta_dm_offline.Menu{
                     ima2=nombre2;
                     ima3="";
 
-                    GuardarImagen(nombre1, rutaImagen1, uri_img);
-                    GuardarImagen(nombre2, rutaImagen2, uri_img2);
+                    /*GuardarImagen(nombre1, rutaImagen1, uri_img);
+                    GuardarImagen(nombre2, rutaImagen2, uri_img2);*/
 
-                    base.RegistrarImagen(ima1, Conf.getPin()+"/incidencias/"+ima1.trim(), rutacarpeta+nombre1, bd);
-                    base.RegistrarImagen(ima2, Conf.getPin()+"/incidencias/"+ima2.trim(), rutacarpeta+nombre2, bd);
+                    ContentValues val_img2 =  ValuesImagen(ima1, Conf.getPin()+"/incidencias/"+ima1.trim(), rutaImagen1);
+                    Uri uri2 = getContentResolver().insert(UrisContentProvider.URI_CONTENIDO_FOTOS_OFFLINE, val_img2);
+
+                    ContentValues val_img3 =  ValuesImagen(ima2, Conf.getPin()+"/incidencias/"+ima2.trim(), rutaImagen2);
+                    Uri uri3 = getContentResolver().insert(UrisContentProvider.URI_CONTENIDO_FOTOS_OFFLINE, val_img3);
 
                     break;
                 case 4:
@@ -521,13 +685,18 @@ public class IncidenciaActivity  extends mx.linkom.caseta_dm_offline.Menu{
                     ima2=nombre2;
                     ima3=nombre3;
 
-                    GuardarImagen(nombre1, rutaImagen1, uri_img);
+                    /*GuardarImagen(nombre1, rutaImagen1, uri_img);
                     GuardarImagen(nombre2, rutaImagen2, uri_img2);
-                    GuardarImagen(nombre3, rutaImagen3, uri_img3);
+                    GuardarImagen(nombre3, rutaImagen3, uri_img3);*/
 
-                    base.RegistrarImagen(ima1, Conf.getPin()+"/incidencias/"+ima1.trim(), rutacarpeta+nombre1, bd);
-                    base.RegistrarImagen(ima2, Conf.getPin()+"/incidencias/"+ima2.trim(), rutacarpeta+nombre2, bd);
-                    base.RegistrarImagen(ima3, Conf.getPin()+"/incidencias/"+ima3.trim(), rutacarpeta+nombre3, bd);
+                    ContentValues val_img4 =  ValuesImagen(ima1, Conf.getPin()+"/incidencias/"+ima1.trim(), rutaImagen1);
+                    Uri uri4 = getContentResolver().insert(UrisContentProvider.URI_CONTENIDO_FOTOS_OFFLINE, val_img4);
+
+                    ContentValues val_img5 =  ValuesImagen(ima2, Conf.getPin()+"/incidencias/"+ima2.trim(), rutaImagen2);
+                    Uri uri5 = getContentResolver().insert(UrisContentProvider.URI_CONTENIDO_FOTOS_OFFLINE, val_img5);
+
+                    ContentValues val_img6 =  ValuesImagen(ima3, Conf.getPin()+"/incidencias/"+ima3.trim(), rutaImagen3);
+                    Uri uri6 = getContentResolver().insert(UrisContentProvider.URI_CONTENIDO_FOTOS_OFFLINE, val_img6);
                     break;
                 default:
                     ima1="";
@@ -547,13 +716,42 @@ public class IncidenciaActivity  extends mx.linkom.caseta_dm_offline.Menu{
             int minute = hoy.getMinute();
             int second =hoy.getSecond();
 
+            String fecha = "";
+
+            //Poner el cero cuando el mes o dia es menor a 10
+            if (day < 10 || month < 10){
+                if (month < 10 && day >= 10){
+                    fecha = year+"-0"+month+"-"+day;
+                } else if (month >= 10 && day < 10){
+                    fecha = year+"-"+month+"-0"+day;
+                }else if (month < 10 && day < 10){
+                    fecha = year+"-0"+month+"-0"+day;
+                }
+            }else {
+                fecha = year+"-"+month+"-"+day;
+            }
+
+            String hora = "";
+
+            if (hour < 10 || minute < 10){
+                if (hour < 10 && minute >=10){
+                    hora = "0"+hour+":"+minute;
+                }else if (hour >= 10 && minute < 10){
+                    hora = hour+":0"+minute;
+                }else if (hour < 10 && minute < 10){
+                    hora = "0"+hour+":0"+minute;
+                }
+            }else {
+                hora = hour+":"+minute;
+            }
+
             ContentValues values = new ContentValues();
             values.put("id_residencial", Conf.getResid().trim());
             values.put("id_usuario", Conf.getUsu().trim());
             values.put("id_tipo", 0);
             values.put("id_rondin", 0);
-            values.put("dia", year+"-"+month+"-"+day);
-            values.put("hora", hour+":"+minute+":"+second);
+            values.put("dia", fecha);
+            values.put("hora", hora);
             values.put("detalle", Comentarios.getText().toString().trim());
             values.put("accion", Accion.getText().toString().trim());
             values.put("foto1", ima1);
@@ -563,9 +761,14 @@ public class IncidenciaActivity  extends mx.linkom.caseta_dm_offline.Menu{
             values.put("estatus", 1);
             values.put("sqliteEstatus", 1);
 
-            id = bd.insert("incidencias", null, values);
+            Uri uri = getContentResolver().insert(UrisContentProvider.URI_CONTENIDO_INCIDENCIAS, values);
 
-            if (id > 0){
+            String idUri = uri.getLastPathSegment();
+
+            id = Integer.parseInt(idUri);
+
+
+            if (id != -1){
                 pd4.dismiss();
                 //Toast.makeText(this, "Registro correcto en modo offline", Toast.LENGTH_SHORT).show();
                 //Toast.makeText(this, Global_info.getULTIMA_ACTUALIZACION(), Toast.LENGTH_SHORT).show();
@@ -573,7 +776,7 @@ public class IncidenciaActivity  extends mx.linkom.caseta_dm_offline.Menu{
                 AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(IncidenciaActivity.this);
                 alertDialogBuilder.setTitle("Alerta");
                 alertDialogBuilder
-                        .setMessage("Registro de incidencia exitosa en modo offline " + Global_info.getULTIMA_ACTUALIZACION())
+                        .setMessage("Registro de incidencia exitosa en modo offline ")
                         .setPositiveButton("Ok",new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                 Intent i = new Intent(getApplicationContext(), ReportesActivity.class);
@@ -582,7 +785,6 @@ public class IncidenciaActivity  extends mx.linkom.caseta_dm_offline.Menu{
                             }
                         }).create().show();
 
-                bd.close();
 
             }else{
                 pd4.dismiss();
@@ -603,8 +805,14 @@ public class IncidenciaActivity  extends mx.linkom.caseta_dm_offline.Menu{
             System.out.println(ex.toString());
         }
 
+    }
 
-        System.out.println(rutaImagen1);
+    public ContentValues ValuesImagen(String nombre, String rutaFirebase, String rutaDispositivo){
+        ContentValues values = new ContentValues();
+        values.put("titulo", nombre);
+        values.put("direccionFirebase", rutaFirebase);
+        values.put("rutaDispositivo", rutaDispositivo);
+        return values;
     }
 
     public void GuardarImagen(String nombreImagen, String direccionImagen, Uri uriImagen) {
