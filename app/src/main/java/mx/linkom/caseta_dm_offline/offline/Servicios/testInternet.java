@@ -263,39 +263,12 @@ public class testInternet extends Service {
     }
 
 
-    /*public static void sendMySql(Context context, String data, String url){
-
-        String finalDatosConsulta = data;
-        System.out.println(finalDatosConsulta);
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
-            //Se ejcuta cuando se obtiene una respuesta
-            @Override
-            public void onResponse(String response) {
-                System.out.println("Respuesta: " + response);
-                Toast.makeText(context, "Información enviada", Toast.LENGTH_SHORT).show();
-            }
-        }, new Response.ErrorListener() {
-            //Método para manejar errores de la petición
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.e("error", ""+error);
-            }
-        }){
-            @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String, String> params = new HashMap<>();
-                params.put("datos", finalDatosConsulta);
-                return params;
-            }
-        };
-        MySingleton.getInstance(context).addToRequestQue(stringRequest);
-
-    }*/
-
     public void enviarIncidencias(Context context){
 
         final Database database = new Database(context);
         final SQLiteDatabase db = database.getWritableDatabase();
+
+        System.out.println("Enviar incidencias");
 
         try{
 
@@ -460,7 +433,6 @@ public class testInternet extends Service {
 
                 final Database database = new Database(context);
                 final SQLiteDatabase db = database.getWritableDatabase();
-
                 try {
                     JSONArray array = new JSONArray(response);
                     for (int i = 0; i<array.length(); i++){

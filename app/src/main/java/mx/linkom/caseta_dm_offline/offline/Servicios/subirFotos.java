@@ -109,7 +109,6 @@ public class subirFotos extends Service {
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                         final Database database = new Database(getApplicationContext());
                         final SQLiteDatabase db = database.getWritableDatabase();
-
                         System.out.println("******************************************************************************************************************************************");
                         System.out.println("******************************************************************************************************************************************");
                         System.out.println("Imagen " + nombres.get(i-1) +" subida a firebase");

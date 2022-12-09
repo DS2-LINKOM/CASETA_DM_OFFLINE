@@ -5,12 +5,15 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.location.LocationProvider;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
@@ -19,6 +22,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 
@@ -40,10 +44,14 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+
+import mx.linkom.caseta_dm_offline.offline.Database.Database;
+import mx.linkom.caseta_dm_offline.offline.Global_info;
 
 public class RondinInfoActivity extends mx.linkom.caseta_dm_offline.Menu  implements OnMapReadyCallback {
     private mx.linkom.caseta_dm_offline.Configuracion Conf;
@@ -54,6 +62,7 @@ public class RondinInfoActivity extends mx.linkom.caseta_dm_offline.Menu  implem
     LinearLayout registrar1;
     Button Incidencia;
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,7 +75,12 @@ public class RondinInfoActivity extends mx.linkom.caseta_dm_offline.Menu  implem
         Registrar = (Button) findViewById(R.id.btnRegistrar);
         Incidencia = (Button) findViewById(R.id.btnIncidencia);
        // dtl_rondines();
-        rondin();
+
+        if (Global_info.getINTERNET().equals("Si")){
+            rondin();
+        }else if (Global_info.getINTERNET().equals("No")){
+            rondinOffline();
+        }
 
         Incidencia.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -94,6 +108,55 @@ public class RondinInfoActivity extends mx.linkom.caseta_dm_offline.Menu  implem
 
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public void rondinOffline() {
+
+        Database base = new Database(getApplicationContext());
+        SQLiteDatabase bd = base.getWritableDatabase();
+
+        try {
+            Cursor cursorRondines2 = null;
+
+            LocalDateTime hoy = LocalDateTime.now();
+
+            int year = hoy.getYear();
+            int month = hoy.getMonthValue();
+            int day = hoy.getDayOfMonth();
+            int hour = hoy.getHour();
+            int minute = hoy.getMinute();
+
+            String id = Conf.getRondin().trim();
+            String usuario = Conf.getUsu().trim();
+            String id_residencial = Conf.getResid().trim();
+            String dia = year+"-"+month+"-"+day;
+            String tiempo = hour+":"+minute;
+
+            System.out.println("SELECT ubi.id, ubi.hora, ubis.nombre, dia.id, dia.dia, rondin.id, rondin.nombre FROM rondines_ubicaciones as ubi, rondines_dia as dia, rondines as rondin, ubicaciones as ubis WHERE ubi.id="+"'"+id+"'"+" and ubi.id_usuario="+"'"+usuario+"'"+" and ubi.id_rondin=dia.id_rondin and ubi.id_rondin=rondin.id and dia.dia="+"'"+dia+"'"+" and ubi.id_residencial="+"'"+id_residencial+"'"+" and ubi.hora<="+"'"+tiempo+"'"+" and ubis.id=ubi.id_ubicacion and NOT EXISTS (SELECT * FROM rondines_dtl WHERE rondines_dtl.id_ubicaciones=ubi.id and rondines_dtl.id_dia=dia.id and rondines_dtl.id_rondin=rondin.id)");
+
+            cursorRondines2 = bd.rawQuery("SELECT ubi.id, ubi.hora, ubis.nombre, dia.id, dia.dia, rondin.id, rondin.nombre FROM rondines_ubicaciones as ubi, rondines_dia as dia, rondines as rondin, ubicaciones as ubis WHERE ubi.id="+"'"+id+"'"+" and ubi.id_usuario="+"'"+usuario+"'"+" and ubi.id_rondin=dia.id_rondin and ubi.id_rondin=rondin.id and dia.dia="+"'"+dia+"'"+" and ubi.id_residencial="+"'"+id_residencial+"'"+" and ubi.hora<="+"'"+tiempo+"'"+" and ubis.id=ubi.id_ubicacion and NOT EXISTS (SELECT * FROM rondines_dtl WHERE rondines_dtl.id_ubicaciones=ubi.id and rondines_dtl.id_dia=dia.id and rondines_dtl.id_rondin=rondin.id)", null);
+
+            ja1 = new JSONArray();
+
+            if (cursorRondines2.moveToFirst()){
+                ja1.put(cursorRondines2.getString(0));
+                ja1.put(cursorRondines2.getString(1));
+                ja1.put(cursorRondines2.getString(2));
+                ja1.put(cursorRondines2.getString(3));
+                ja1.put(cursorRondines2.getString(4));
+                ja1.put(cursorRondines2.getString(5));
+                ja1.put(cursorRondines2.getString(6));
+            }
+
+            cursorRondines2.close();
+
+            ubicacionesOffline();
+
+        }catch (Exception ex){
+            System.out.println(ex.toString());
+        }finally {
+            bd.close();
+        }
+    }
 
     public void rondin() {
         String URL = "https://demoarboledas.privadaarboledas.net/plataforma/casetaV2/controlador/CC/rondines_2.php?bd_name="+Conf.getBd()+"&bd_user="+Conf.getBdUsu()+"&bd_pwd="+Conf.getBdCon();
@@ -130,6 +193,48 @@ public class RondinInfoActivity extends mx.linkom.caseta_dm_offline.Menu  implem
             }
         };
         requestQueue.add(stringRequest);
+    }
+
+    public void ubicacionesOffline() {
+
+        Database base = new Database(getApplicationContext());
+        SQLiteDatabase bd = base.getWritableDatabase();
+
+        try {
+            Cursor cursorRondines3 = null;
+
+            String id = ja1.getString(0);
+
+            System.out.println("SELECT ubis.id, ubis.longitud, ubis.latitud FROM rondines_ubicaciones as ubi, ubicaciones as ubis WHERE ubi.id="+"'"+id+"'"+" AND ubi.id_ubicacion=ubis.id and ubis.estatus=1");
+
+            cursorRondines3 = bd.rawQuery("SELECT ubis.id, ubis.longitud, ubis.latitud FROM rondines_ubicaciones as ubi, ubicaciones as ubis WHERE ubi.id="+"'"+id+"'"+" AND ubi.id_ubicacion=ubis.id and ubis.estatus=1", null);
+
+            ja1 = new JSONArray();
+
+            if (cursorRondines3.moveToFirst()){
+                ja2.put(cursorRondines3.getString(0));
+                ja2.put(cursorRondines3.getString(1));
+                ja2.put(cursorRondines3.getString(2));
+            }
+
+            cursorRondines3.close();
+
+
+            Nombre.setText(ja1.getString(6));
+            Hora.setText(ja1.getString(1));
+            Ubicacion.setText(ja1.getString(2));
+
+            Conf.setUsuLatitud(ja2.getString(2));
+            Conf.setUsuLongitud(ja2.getString(1));
+            SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                    .findFragmentById(R.id.map);
+            mapFragment.getMapAsync(RondinInfoActivity.this);
+
+        }catch (Exception ex){
+
+        }finally {
+            bd.close();
+        }
     }
 
     public void ubicaciones() {

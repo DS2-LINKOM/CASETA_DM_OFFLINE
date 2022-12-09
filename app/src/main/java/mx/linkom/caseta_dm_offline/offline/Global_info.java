@@ -7,7 +7,7 @@ public class Global_info extends Application {
     private static int SEGUNDOS = 0;
     private static String ULTIMA_ACTUALIZACION = "No se ha registrado ninguna actualización";
     private static String INTERNET = "Si";
-    private static String URL = "http://192.168.7.106/android/demoCaseta/";
+    private static String URL = "http://192.168.7.108/android/demoCaseta/";
 
     public static String getINTERNET() {
         return INTERNET;
