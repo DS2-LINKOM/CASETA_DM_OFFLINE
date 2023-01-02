@@ -1,5 +1,6 @@
 package mx.linkom.caseta_dm_offline;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -12,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import org.json.JSONArray;
@@ -21,6 +23,7 @@ import java.util.ArrayList;
 
 import mx.linkom.caseta_dm_offline.adaptadores.ModuloClassGrid;
 import mx.linkom.caseta_dm_offline.adaptadores.adaptador_Modulo;
+import mx.linkom.caseta_dm_offline.offline.Global_info;
 
 
 public class CorrespondenciaActivity extends mx.linkom.caseta_dm_offline.Menu {
@@ -33,6 +36,9 @@ public class CorrespondenciaActivity extends mx.linkom.caseta_dm_offline.Menu {
 
     private GridView gridList;
 
+    ImageView iconoInternet;
+    boolean Offline = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,8 +46,42 @@ public class CorrespondenciaActivity extends mx.linkom.caseta_dm_offline.Menu {
 
         Conf = new Configuracion(this);
         gridList = (GridView)findViewById(R.id.gridList);
+        iconoInternet = (ImageView) findViewById(R.id.iconoInternetCorrespondencia);
+
+        if (Global_info.getINTERNET().equals("Si")){
+            iconoInternet.setImageResource(R.drawable.ic_online);
+            Offline = false;
+        }else {
+            iconoInternet.setImageResource(R.drawable.ic_offline);
+            Offline = true;
+        }
 
         llenado();
+
+        iconoInternet.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (Offline){
+                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(CorrespondenciaActivity.this);
+                    alertDialogBuilder.setTitle("Alerta");
+                    alertDialogBuilder
+                            .setMessage("Aplicación funcionando en modo offline \n\nDatos actualizados hasta: \n\n"+Global_info.getULTIMA_ACTUALIZACION())
+                            .setPositiveButton("Ok",new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                }
+                            }).create().show();
+                }else {
+                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(CorrespondenciaActivity.this);
+                    alertDialogBuilder.setTitle("Alerta");
+                    alertDialogBuilder
+                            .setMessage("Aplicación funcionando en modo online \n\nDatos actualizados para funcionamiento en modo offline hasta: \n\n"+Global_info.getULTIMA_ACTUALIZACION())
+                            .setPositiveButton("Ok",new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                }
+                            }).create().show();
+                }
+            }
+        });
 
     }
 

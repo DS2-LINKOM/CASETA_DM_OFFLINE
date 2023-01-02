@@ -821,6 +821,43 @@ public class RondinIncidencias  extends mx.linkom.caseta_dm_offline.Menu{
             int minute = hoy.getMinute();
             int second =hoy.getSecond();
 
+            String fecha = "";
+
+            //Poner el cero cuando el mes o dia es menor a 10
+            if (day < 10 || month < 10){
+                if (month < 10 && day >= 10){
+                    fecha = year+"-0"+month+"-"+day;
+                } else if (month >= 10 && day < 10){
+                    fecha = year+"-"+month+"-0"+day;
+                }else if (month < 10 && day < 10){
+                    fecha = year+"-0"+month+"-0"+day;
+                }
+            }else {
+                fecha = year+"-"+month+"-"+day;
+            }
+
+            String hora = "";
+
+            if (hour < 10 || minute < 10){
+                if (hour < 10 && minute >=10){
+                    hora = "0"+hour+":"+minute;
+                }else if (hour >= 10 && minute < 10){
+                    hora = hour+":0"+minute;
+                }else if (hour < 10 && minute < 10){
+                    hora = "0"+hour+":0"+minute;
+                }
+            }else {
+                hora = hour+":"+minute;
+            }
+
+            String segundos = "00";
+
+            if (second < 10){
+                segundos = "0"+second;
+            }else {
+                segundos = ""+second;
+            }
+
 
             ContentValues values = new ContentValues();
             values.put("id_residencial", Conf.getResid().trim());
@@ -836,8 +873,8 @@ public class RondinIncidencias  extends mx.linkom.caseta_dm_offline.Menu{
             }catch (JSONException e){
                 e.printStackTrace();
             }
-            values.put("dia", year+"-"+month+"-"+day);
-            values.put("hora", hour+":"+minute+":"+second);
+            values.put("dia", fecha);
+            values.put("hora", hora+":"+segundos);
             values.put("detalle", Comentarios.getText().toString().trim());
             values.put("accion", Accion.getText().toString().trim());
             values.put("foto1", ima1);

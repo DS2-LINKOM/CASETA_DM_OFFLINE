@@ -32,7 +32,7 @@
                 android:orientation="vertical">
 
 
-                <LinearLayout
+                <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
@@ -42,20 +42,27 @@
                     <ImageView
                         android:layout_width="44dp"
                         android:layout_height="28dp"
-                        android:src="@drawable/menu"
                         android:onClick="showPopup"
-                        />
+                        android:src="@drawable/menu" />
+
                     <TextView
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_centerHorizontal="true"
                         android:layout_marginLeft="22dp"
+                        android:fontFamily="@font/fontNegritaC"
                         android:text="Permitir Entrada"
                         android:textColor="@color/fontColorBlanco"
-                        android:textSize="@dimen/fontSizeEncabezados"
-                        android:fontFamily="@font/fontNegritaC"
-                        />
+                        android:textSize="@dimen/fontSizeEncabezados" />
 
-                </LinearLayout>
+                    <ImageView
+                        android:id="@+id/iconoInternetAccesosRegistro"
+                        android:layout_width="44dp"
+                        android:layout_height="28dp"
+                        android:layout_alignParentEnd="true"
+                        app:srcCompat="@drawable/ic_offline" />
+
+                </RelativeLayout>
             </LinearLayout>
         </FrameLayout>
     </ScrollView>

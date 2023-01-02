@@ -8,7 +8,7 @@ public class Global_info extends Application {
     private static int SEGUNDOS = 0;
     private static String ULTIMA_ACTUALIZACION = "No se ha registrado ninguna actualización";
     private static String INTERNET = "Si";
-    //private static String URL = "http://192.168.7.105/android/demoCaseta/";
+    //private static String URL = "http://192.168.0.107/android/demoCaseta/";
     private static String URL = "https://demoarboledas.privadaarboledas.net/plataforma/casetaV2/controlador/CC/off-line/";
 
 

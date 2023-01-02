@@ -24,7 +24,15 @@ public class UrisContentProvider {
     private static final String RUTA_SESIONCASETA = "sesion_caseta";
     private static final String RUTA_UBICACIONES = "ubicaciones";
     private static final String RUTA_UBICACIONESQR = "ubicaciones_qr";
-
+    private static final String RUTA_LUGAR = "lugar";
+    private static final String RUTA_USUARIO = "usuario";
+    private static final String RUTA_DTL_LUGAR_USUARIO = "dtl_lugar_usuario";
+    private static final String RUTA_CORRESPONDENCIA = "correspondencia";
+    private static final String RUTA_DTL_ENTRADAS_SALIDAS = "dtl_entradas_salidas";
+    private static final String RUTA_VISITA = "visita";
+    private static final String RUTA_AUTO = "auto";
+    private static final String RUTA_CAJONES = "cajones";
+    private static final String RUTA_DTL_ENTRADAS_SALIDAS_AUTOS = "dtl_entradas_salidas_autos";
 
     public static final Uri URI_CONTENIDO_APP_CASETA = Uri.withAppendedPath(URI_BASE, RUTA_APPCASETA);
     public static final Uri URI_CONTENIDO_INCIDENCIAS = Uri.withAppendedPath(URI_BASE, RUTA_INCIDENCIAS);
@@ -42,6 +50,15 @@ public class UrisContentProvider {
     public static final Uri URI_CONTENIDO_SESIONCASETA = Uri.withAppendedPath(URI_BASE, RUTA_SESIONCASETA);
     public static final Uri URI_CONTENIDO_UBICACIONES = Uri.withAppendedPath(URI_BASE, RUTA_UBICACIONES);
     public static final Uri URI_CONTENIDO_UBICACIONESQR = Uri.withAppendedPath(URI_BASE, RUTA_UBICACIONESQR);
+    public static final Uri URI_CONTENIDO_LUGAR = Uri.withAppendedPath(URI_BASE, RUTA_LUGAR);
+    public static final Uri URI_CONTENIDO_USUARIO = Uri.withAppendedPath(URI_BASE, RUTA_USUARIO);
+    public static final Uri URI_CONTENIDO_DTL_LUGAR_USUARIO = Uri.withAppendedPath(URI_BASE, RUTA_DTL_LUGAR_USUARIO);
+    public static final Uri URI_CONTENIDO_CORRESPONDENCIA = Uri.withAppendedPath(URI_BASE, RUTA_CORRESPONDENCIA);
+    public static final Uri URI_CONTENIDO_DTL_ENTRADAS_SALIDAS = Uri.withAppendedPath(URI_BASE, RUTA_DTL_ENTRADAS_SALIDAS);
+    public static final Uri URI_CONTENIDO_VISITA = Uri.withAppendedPath(URI_BASE, RUTA_VISITA);
+    public static final Uri URI_CONTENIDO_AUTO = Uri.withAppendedPath(URI_BASE, RUTA_AUTO);
+    public static final Uri URI_CONTENIDO_CAJONES = Uri.withAppendedPath(URI_BASE, RUTA_CAJONES);
+    public static final Uri URI_CONTENIDO_DTL_ENTRADAS_SALIDAS_AUTOS = Uri.withAppendedPath(URI_BASE, RUTA_DTL_ENTRADAS_SALIDAS_AUTOS);
 
 
 }

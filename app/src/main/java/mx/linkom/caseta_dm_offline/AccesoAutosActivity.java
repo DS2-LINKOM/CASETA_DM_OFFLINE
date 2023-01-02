@@ -2,11 +2,14 @@ package mx.linkom.caseta_dm_offline;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.InputFilter;
@@ -27,6 +30,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.FileProvider;
 
@@ -56,6 +60,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -65,6 +70,8 @@ import java.util.Random;
 
 import id.zelory.compressor.Compressor;
 import mx.linkom.caseta_dm_offline.adaptadores.ListasClassGrid;
+import mx.linkom.caseta_dm_offline.offline.Database.UrisContentProvider;
+import mx.linkom.caseta_dm_offline.offline.Global_info;
 
 public class AccesoAutosActivity extends mx.linkom.caseta_dm_offline.Menu {
     Configuracion Conf;
@@ -92,6 +99,11 @@ public class AccesoAutosActivity extends mx.linkom.caseta_dm_offline.Menu {
     TextView nombre_foto1,nombre_foto2,nombre_foto3;
     Uri uri_img,uri_img2,uri_img3;
     TextView dato;
+
+    ImageView iconoInternet;
+    boolean Offline = false;
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -154,12 +166,53 @@ public class AccesoAutosActivity extends mx.linkom.caseta_dm_offline.Menu {
 
         dato = (TextView) findViewById(R.id.placas_texto);
 
+
+        iconoInternet = (ImageView) findViewById(R.id.iconoInternetAutoAccesos);
+
+        if (Global_info.getINTERNET().equals("Si")){
+            iconoInternet.setImageResource(R.drawable.ic_online);
+            Offline = false;
+        }else {
+            iconoInternet.setImageResource(R.drawable.ic_offline);
+            Offline = true;
+        }
+
+        iconoInternet.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (Offline){
+                    android.app.AlertDialog.Builder alertDialogBuilder = new android.app.AlertDialog.Builder(AccesoAutosActivity.this);
+                    alertDialogBuilder.setTitle("Alerta");
+                    alertDialogBuilder
+                            .setMessage("Aplicación funcionando en modo offline \n\nDatos actualizados hasta: \n\n"+Global_info.getULTIMA_ACTUALIZACION())
+                            .setPositiveButton("Ok",new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                }
+                            }).create().show();
+                }else {
+                    android.app.AlertDialog.Builder alertDialogBuilder = new android.app.AlertDialog.Builder(AccesoAutosActivity.this);
+                    alertDialogBuilder.setTitle("Alerta");
+                    alertDialogBuilder
+                            .setMessage("Aplicación funcionando en modo online \n\nDatos actualizados para funcionamiento en modo offline hasta: \n\n"+Global_info.getULTIMA_ACTUALIZACION())
+                            .setPositiveButton("Ok",new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                }
+                            }).create().show();
+                }
+            }
+        });
+
+
         //SI ES ACEPTADO O DENEGAODO
         if(Conf.getST().equals("Aceptado")){
             rlVista.setVisibility(View.VISIBLE);
             rlPermitido.setVisibility(View.GONE);
             rlDenegado.setVisibility(View.GONE);
-            menu();
+            if (Offline){
+                menuOffline();
+            }else {
+                menu();
+            }
         }else if(Conf.getST().equals("Denegado")){
             rlDenegado.setVisibility(View.VISIBLE);
             rlVista.setVisibility(View.GONE);
@@ -309,6 +362,39 @@ public class AccesoAutosActivity extends mx.linkom.caseta_dm_offline.Menu {
     int mes = fecha.get(Calendar.MONTH) + 1;
     int dia = fecha.get(Calendar.DAY_OF_MONTH);
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public void menuOffline() {
+        Log.e("info", "Menu offline");
+        try {
+            Cursor cursoAppCaseta = getContentResolver().query(UrisContentProvider.URI_CONTENIDO_APP_CASETA, null, null, null);
+
+            ja5 = new JSONArray();
+
+            if (cursoAppCaseta.moveToFirst()){
+                ja5.put(cursoAppCaseta.getString(0));
+                ja5.put(cursoAppCaseta.getString(1));
+                ja5.put(cursoAppCaseta.getString(2));
+                ja5.put(cursoAppCaseta.getString(3));
+                ja5.put(cursoAppCaseta.getString(4));
+                ja5.put(cursoAppCaseta.getString(5));
+                ja5.put(cursoAppCaseta.getString(6));
+                ja5.put(cursoAppCaseta.getString(7));
+                ja5.put(cursoAppCaseta.getString(8));
+                ja5.put(cursoAppCaseta.getString(9));
+                ja5.put(cursoAppCaseta.getString(10));
+                ja5.put(cursoAppCaseta.getString(11));
+                ja5.put(cursoAppCaseta.getString(12));
+
+                submenuOffline(ja5.getString(0));
+
+            }
+            cursoAppCaseta.close();
+
+        }catch (Exception ex){
+            System.out.println(ex.toString());
+        }
+
+    }
 
     public void menu() {
         String URL = "https://demoarboledas.privadaarboledas.net/plataforma/casetaV2/controlador/CC/menu.php?bd_name="+Conf.getBd()+"&bd_user="+Conf.getBdUsu()+"&bd_pwd="+Conf.getBdCon();
@@ -344,6 +430,46 @@ public class AccesoAutosActivity extends mx.linkom.caseta_dm_offline.Menu {
             }
         };
         requestQueue.add(stringRequest);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public void submenuOffline(final String id_app) {
+        Log.e("info", "Sub menu offline");
+        try {
+            Cursor cursoAppCaseta = getContentResolver().query(UrisContentProvider.URI_CONTENIDO_APPCASETAIMA, null, null, null, null);
+
+            ja6 = new JSONArray();
+
+            if (cursoAppCaseta.moveToFirst()){
+                ja6.put(cursoAppCaseta.getString(0));
+                ja6.put(cursoAppCaseta.getString(1));
+                ja6.put(cursoAppCaseta.getString(2));
+                ja6.put(cursoAppCaseta.getString(3));
+                ja6.put(cursoAppCaseta.getString(4));
+                ja6.put(cursoAppCaseta.getString(5));
+                ja6.put(cursoAppCaseta.getString(6));
+                ja6.put(cursoAppCaseta.getString(7));
+                ja6.put(cursoAppCaseta.getString(8));
+                ja6.put(cursoAppCaseta.getString(9));
+                ja6.put(cursoAppCaseta.getString(10));
+
+                imagenes();
+                AutosOffline();
+            }else {
+                int $arreglo[]={0};
+                try {
+                    ja6 = new JSONArray($arreglo);
+                    imagenes();
+                    AutosOffline();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+            cursoAppCaseta.close();
+
+        }catch (Exception ex){
+            System.out.println(ex.toString());
+        }
     }
 
     public void submenu(final String id_app) {
@@ -596,6 +722,46 @@ public class AccesoAutosActivity extends mx.linkom.caseta_dm_offline.Menu {
     }
 
 
+    public void AutosOffline(){
+        Log.e("info", "Autos offline");
+
+        try {
+            String qr =  Conf.getQR();
+            String id_residencial = Conf.getResid().trim();
+
+            String[] parametros = {qr, id_residencial};
+            Cursor cursor = getContentResolver().query(UrisContentProvider.URI_CONTENIDO_AUTO, null, null, parametros, null);
+
+            if (cursor.moveToFirst()){
+                ja7 = new JSONArray();
+
+                do {
+                    ja7.put(cursor.getString(0));
+                    ja7.put(cursor.getString(1));
+                    ja7.put(cursor.getString(2));
+                    ja7.put(cursor.getString(3));
+                    ja7.put(cursor.getString(4));
+                    ja7.put(cursor.getString(5));
+                    ja7.put(cursor.getString(6));
+                    ja7.put(cursor.getString(7));
+                    ja7.put(cursor.getString(8));
+                    ja7.put(cursor.getString(9));
+                    ja7.put(cursor.getString(10));
+                    ja7.put(cursor.getString(11));
+                    ja7.put(cursor.getString(12));
+                    ja7.put(cursor.getString(13));
+
+                    UsuarioOffline(ja7.getString(2));
+
+                }while (cursor.moveToNext());
+            }
+
+            cursor.close();
+        }catch (Exception ex){
+            Log.e("Exception ", ex.toString());
+        }
+    }
+
     public void Autos(){
 
         String url = "https://demoarboledas.privadaarboledas.net/plataforma/casetaV2/controlador/CC/auto1.php?bd_name=" + Conf.getBd() + "&bd_user=" + Conf.getBdUsu() + "&bd_pwd=" + Conf.getBdCon();
@@ -637,11 +803,39 @@ public class AccesoAutosActivity extends mx.linkom.caseta_dm_offline.Menu {
         requestQueue.add(stringRequest);
     }
 
+    public void UsuarioOffline(final String IdUsu){ //DATOS USUARIO
 
+        Log.e("info", "Usuario offline");
 
+        try {
+            String id_residencial = Conf.getResid().trim();
+            String id = IdUsu.trim();
+
+            String parametros[] ={id, id_residencial};
+
+            Cursor cursor = getContentResolver().query(UrisContentProvider.URI_CONTENIDO_USUARIO, null, "dts_accesso_autos", parametros, null);
+
+            if (cursor.moveToFirst()){
+                ja2 = new JSONArray();
+
+                ja2.put(cursor.getString(0));
+                ja2.put(cursor.getString(1));
+                ja2.put(cursor.getString(2));
+                ja2.put(cursor.getString(3));
+                ja2.put(cursor.getString(4));
+                ja2.put(cursor.getString(5));
+                ja2.put(cursor.getString(6));
+
+                dtlLugarOffline(ja2.getString(0));
+            }
+            cursor.close();
+        }catch (Exception ex){
+            Log.e("Exception", ex.toString());
+        }
+
+    }
 
     public void Usuario(final String IdUsu){ //DATOS USUARIO
-
         String URL = "https://demoarboledas.privadaarboledas.net/plataforma/casetaV2/controlador/CC/vst_php2.php?bd_name="+Conf.getBd()+"&bd_user="+Conf.getBdUsu()+"&bd_pwd="+Conf.getBdCon();
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         StringRequest stringRequest = new StringRequest(Request.Method.POST, URL, new Response.Listener<String>() {
@@ -674,6 +868,31 @@ public class AccesoAutosActivity extends mx.linkom.caseta_dm_offline.Menu {
             }
         };
         requestQueue.add(stringRequest);
+    }
+
+    public void dtlLugarOffline(final String idUsuario){
+
+        Log.e("info", "dtl Lugar offline");
+
+        try {
+            String id_residencial = Conf.getResid().trim();
+            String id = idUsuario.trim();
+
+            String parametros[] ={id_residencial, id};
+
+            Cursor cursor = getContentResolver().query(UrisContentProvider.URI_CONTENIDO_LUGAR, null, "dtl_lugar_usuario", parametros, null);
+
+            if (cursor.moveToFirst()){
+                ja3 = new JSONArray();
+                ja3.put(cursor.getString(0));
+
+                cajonesOffline();
+            }
+            cursor.close();
+        }catch (Exception ex){
+            Log.e("Exception", ex.toString());
+        }
+
     }
 
     public void dtlLugar(final String idUsuario){
@@ -716,6 +935,36 @@ public class AccesoAutosActivity extends mx.linkom.caseta_dm_offline.Menu {
             }
         };
         requestQueue.add(stringRequest);
+    }
+
+    public void cajonesOffline(){
+        Log.e("info", "cajones offline");
+
+        try {
+            String id_residencial = Conf.getResid().trim();
+            String id = "";
+
+            String parametros[] ={id_residencial, id};
+
+            Cursor cursor = getContentResolver().query(UrisContentProvider.URI_CONTENIDO_CAJONES, null, "cajones", parametros, null);
+
+            if (cursor.moveToFirst()){
+                ja9 = new JSONArray();
+                ja9.put(cursor.getString(0));
+
+                salidasOffline();
+            }else {
+                int $arreglo[]={0};
+                try {
+                    ja9 = new JSONArray($arreglo);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                salidasOffline();
+            }
+        }catch (Exception ex){
+            Log.e("Exception", ex.toString());
+        }
     }
 
     public void cajones(){
@@ -774,8 +1023,48 @@ public class AccesoAutosActivity extends mx.linkom.caseta_dm_offline.Menu {
         requestQueue.add(stringRequest);
     }
 
+    public void salidasOffline(){
+        Log.e("info", "salidas offline");
+        try {
+            String id_usuario = ja7.getString(2);
+            String id_auto  = ja7.getString(0);
+            String id_residencial = Conf.getResid().trim();
+
+            String parametros[] = {id_residencial, id_usuario, id_auto};
+
+            Cursor cursor = getContentResolver().query(UrisContentProvider.URI_CONTENIDO_DTL_ENTRADAS_SALIDAS_AUTOS, null, "auto2", parametros, null);
+
+            if (cursor.moveToFirst()){
+                ja8 = new JSONArray();
+                ja8.put(cursor.getString(0));
+                ja8.put(cursor.getString(1));
+                ja8.put(cursor.getString(2));
+                ja8.put(cursor.getString(3));
+                ja8.put(cursor.getString(4));
+                ja8.put(cursor.getString(5));
+                ja8.put(cursor.getString(6));
+                ja8.put(cursor.getString(7));
+                ja8.put(cursor.getString(8));
+                ja8.put(cursor.getString(9));
+                ja8.put(cursor.getString(10));
+                ja8.put(cursor.getString(11));
+
+                ValidarQR();
+            }else {
+                int $arreglo[]={0};
+                ja8 = new JSONArray($arreglo);
+                ValidarQR();
+            }
+
+        }catch (Exception ex){
+            Log.e("Exception", ex.toString());
+        }
+
+    }
+
 
     public void salidas(){
+
 
         String url = "https://demoarboledas.privadaarboledas.net/plataforma/casetaV2/controlador/CC/auto2.php?bd_name=" + Conf.getBd() + "&bd_user=" + Conf.getBdUsu() + "&bd_pwd=" + Conf.getBdCon();
 
@@ -906,8 +1195,14 @@ public class AccesoAutosActivity extends mx.linkom.caseta_dm_offline.Menu {
         alertDialogBuilder
                 .setMessage("¿ Desea realizar la entrada ?")
                 .setPositiveButton("Ok",new DialogInterface.OnClickListener() {
+                    @RequiresApi(api = Build.VERSION_CODES.O)
                     public void onClick(DialogInterface dialog, int id) {
-                        Registrar();
+
+                        if (Offline){
+                            RegistrarOffline();
+                        }else {
+                            Registrar();
+                        }
                     }
                 })
                 .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
@@ -921,6 +1216,123 @@ public class AccesoAutosActivity extends mx.linkom.caseta_dm_offline.Menu {
                 }).create().show();
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public void RegistrarOffline(){
+
+        if(Placas.getText().toString().equals("")){
+            Toast.makeText(getApplicationContext(),"Campo de placas", Toast.LENGTH_SHORT).show();
+        }else if(Placas.getText().toString().equals(" ")){
+            Toast.makeText(getApplicationContext(),"Campo de placas ", Toast.LENGTH_SHORT).show();
+        }else if( Placas.getText().toString().equals("N/A")){
+            Toast.makeText(getApplicationContext(),"Campo de placas", Toast.LENGTH_SHORT).show();
+        }else{
+
+            try {
+                LocalDateTime hoy = LocalDateTime.now();
+
+                int year = hoy.getYear();
+                int month = hoy.getMonthValue();
+                int day = hoy.getDayOfMonth();
+                int hour = hoy.getHour();
+                int minute = hoy.getMinute();
+                int second =hoy.getSecond();
+
+                String fecha = "";
+
+                //Poner el cero cuando el mes o dia es menor a 10
+                if (day < 10 || month < 10){
+                    if (month < 10 && day >= 10){
+                        fecha = year+"-0"+month+"-"+day;
+                    } else if (month >= 10 && day < 10){
+                        fecha = year+"-"+month+"-0"+day;
+                    }else if (month < 10 && day < 10){
+                        fecha = year+"-0"+month+"-0"+day;
+                    }
+                }else {
+                    fecha = year+"-"+month+"-"+day;
+                }
+
+                String hora = "";
+
+                if (hour < 10 || minute < 10){
+                    if (hour < 10 && minute >=10){
+                        hora = "0"+hour+":"+minute;
+                    }else if (hour >= 10 && minute < 10){
+                        hora = hour+":0"+minute;
+                    }else if (hour < 10 && minute < 10){
+                        hora = "0"+hour+":0"+minute;
+                    }
+                }else {
+                    hora = hour+":"+minute;
+                }
+
+                String segundo = "00";
+
+                if (second < 10){
+                    segundo = "0"+second;
+                }else {
+                    segundo = ""+second;
+                }
+
+
+
+                ContentValues values = new ContentValues();
+                values.put("id_residencial", Conf.getResid().trim());
+                values.put("id_usuario", ja7.getString(2));
+                values.put("id_auto", ja7.getString(0));
+                values.put("entrada_real", fecha+" "+hora+":"+segundo);
+                values.put("guardia_de_entrada", Conf.getUsu().trim());
+                values.put("salida_real", "0000-00-00 00:00:00");
+                values.put("guardia_de_salida", 0);
+                values.put("foto1", "");
+                values.put("foto2", "");
+                values.put("foto3", "");
+                values.put("estatus", 1);
+                values.put("sqliteEstatus", 1);
+
+                Uri uri = getContentResolver().insert(UrisContentProvider.URI_CONTENIDO_DTL_ENTRADAS_SALIDAS_AUTOS,values);
+
+                String idUri = uri.getLastPathSegment();
+
+                int insertar = Integer.parseInt(idUri);
+
+                if (insertar != -1){
+                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(AccesoAutosActivity.this);
+                    alertDialogBuilder.setTitle("Alerta");
+                    alertDialogBuilder
+                            .setMessage("Entrada de auto exitosa en modo offline")
+                            .setPositiveButton("Ok",new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+
+                                    Intent i = new Intent(getApplicationContext(), EntradasSalidasActivity.class);
+                                    startActivity(i);
+                                    finish();
+
+
+
+                                }
+                            }).create().show();
+                }else {
+                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(AccesoAutosActivity.this);
+                    alertDialogBuilder.setTitle("Alerta");
+                    alertDialogBuilder
+                            .setMessage("Entrada de auto no exitosa en modo offline")
+                            .setPositiveButton("Ok",new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    Toast.makeText(getApplicationContext(),"Entrada de Auto No Registrada", Toast.LENGTH_SHORT).show();
+                                    Intent i = new Intent(getApplicationContext(), EscaneoVisitaActivity.class);
+                                    startActivity(i);
+                                    finish();
+                                }
+                            }).create().show();
+                }
+
+            }catch (Exception ex){
+                Log.e("Exception", ex.toString());
+            }
+
+        }
+    }
 
     public void Registrar(){
 

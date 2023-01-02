@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
-    android:background="@color/white">
+    android:background="@color/white"
+    android:orientation="vertical">
 
 
     <!---ENCABEZADO-->
@@ -21,9 +21,8 @@
             <ImageView
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
-                android:src="@drawable/feb"
                 android:scaleType="fitXY"
-                />
+                android:src="@drawable/feb" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -31,7 +30,7 @@
                 android:orientation="vertical">
 
 
-                <LinearLayout
+                <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
@@ -41,20 +40,28 @@
                     <ImageView
                         android:layout_width="44dp"
                         android:layout_height="28dp"
-                        android:src="@drawable/menu"
+                        android:layout_alignParentStart="true"
                         android:onClick="showPopup"
-                        />
+                        android:src="@drawable/menu" />
+
                     <TextView
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_centerHorizontal="true"
                         android:layout_marginLeft="22dp"
+                        android:fontFamily="@font/fontNegritaC"
                         android:text="Pre-Entrada"
                         android:textColor="@color/fontColorBlanco"
-                        android:textSize="@dimen/fontSizeEncabezados"
-                        android:fontFamily="@font/fontNegritaC"
-                        />
+                        android:textSize="@dimen/fontSizeEncabezados" />
 
-                </LinearLayout>
+                    <ImageView
+                        android:id="@+id/iconoInternetPreentradas"
+                        android:layout_width="44dp"
+                        android:layout_height="28dp"
+                        android:layout_alignParentEnd="true"
+                        app:srcCompat="@drawable/ic_offline" />
+
+                </RelativeLayout>
             </LinearLayout>
         </FrameLayout>
     </ScrollView>
@@ -63,11 +70,12 @@
         android:id="@+id/rlPermitido"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:visibility="visible"
-        >
+        android:visibility="visible">
+
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -78,8 +86,8 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:paddingLeft="16dp"
-                    android:paddingRight="16dp"
                     android:paddingTop="12dp"
+                    android:paddingRight="16dp"
                     android:paddingBottom="12dp">
 
 
@@ -89,60 +97,55 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:layout_weight="1"
+                        android:fontFamily="@font/fontNegritaC"
                         android:text="Nombre:"
                         android:textColor="@color/fontColorGris"
-                        android:textSize="@dimen/fontSize"
-                        android:fontFamily="@font/fontNegritaC"
-                        />
+                        android:textSize="@dimen/fontSize" />
 
                     <customfonts.MyEditText
                         android:id="@+id/setNombre"
                         android:layout_width="0dp"
-                        android:layout_weight="1"
                         android:layout_height="wrap_content"
+                        android:layout_weight="1"
                         android:textColor="@color/fontColorNegro"
-                        android:textSize="@dimen/fontSize"
-                        />
+                        android:textSize="@dimen/fontSize" />
 
                 </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="0.5dp"
-                    android:background="@color/divider"
-                    ></LinearLayout>
+                    android:background="@color/divider"></LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:paddingLeft="16dp"
-                    android:paddingRight="16dp"
                     android:paddingTop="12dp"
+                    android:paddingRight="16dp"
                     android:paddingBottom="12dp">
 
 
                     <TextView
                         android:id="@+id/setTipo"
                         android:layout_width="0dp"
-                        android:layout_weight="1"
                         android:layout_height="wrap_content"
-                        android:text="Tipo:"
                         android:layout_gravity="center"
-                        android:textColor="@color/fontColorGris"
-                        android:textSize="@dimen/fontSize"
-                        android:fontFamily="@font/fontNegritaC"
-                        />
-                    <TextView
-                        android:fontFamily="@font/fontNormalC"
-                        android:layout_width="0dp"
                         android:layout_weight="1"
+                        android:fontFamily="@font/fontNegritaC"
+                        android:text="Tipo:"
+                        android:textColor="@color/fontColorGris"
+                        android:textSize="@dimen/fontSize" />
+
+                    <TextView
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:fontFamily="@font/fontNormalC"
                         android:inputType="text"
                         android:textColor="#000000"
-                        android:textSize="@dimen/fontSize"
-                        />
-
+                        android:textSize="@dimen/fontSize" />
 
 
                 </LinearLayout>
@@ -152,11 +155,9 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:paddingLeft="16dp"
-                    android:paddingRight="16dp"
                     android:paddingTop="12dp"
+                    android:paddingRight="16dp"
                     android:paddingBottom="12dp">
-
-
 
 
                     <RadioGroup
@@ -165,73 +166,71 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:orientation="horizontal">
+
                         <RadioButton
                             android:id="@+id/Visita"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Visitante"
                             android:checked="true"
-                            android:textColor="@color/fontColorGris"
-                            android:textSize="@dimen/fontSizeTipos"
                             android:fontFamily="@font/fontNormalC"
-                            />
+                            android:text="Visitante"
+                            android:textColor="@color/fontColorGris"
+                            android:textSize="@dimen/fontSizeTipos" />
+
                         <RadioButton
                             android:id="@+id/Proveedor"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:fontFamily="@font/fontNormalC"
                             android:text="Proveedor / Servicio"
                             android:textColor="@color/fontColorGris"
-                            android:textSize="@dimen/fontSizeTipos"
-                            android:fontFamily="@font/fontNormalC"
-                            />
+                            android:textSize="@dimen/fontSizeTipos" />
+
                         <RadioButton
                             android:id="@+id/Taxista"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:fontFamily="@font/fontNormalC"
                             android:text="Taxista"
                             android:textColor="@color/fontColorGris"
-                            android:textSize="@dimen/fontSizeTipos"
-                            android:fontFamily="@font/fontNormalC"
-                            />
+                            android:textSize="@dimen/fontSizeTipos" />
                     </RadioGroup>
 
                 </LinearLayout>
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="0.5dp"
-                    android:background="@color/divider"
-                    ></LinearLayout>
+                    android:background="@color/divider"></LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:paddingLeft="16dp"
-                    android:paddingRight="16dp"
                     android:paddingTop="12dp"
+                    android:paddingRight="16dp"
                     android:paddingBottom="12dp">
 
 
                     <TextView
                         android:layout_width="0dp"
-                        android:layout_weight="1"
                         android:layout_height="wrap_content"
-                        android:text="Calle:"
                         android:layout_gravity="center"
-                        android:textColor="@color/fontColorGris"
-                        android:textSize="@dimen/fontSize"
+                        android:layout_weight="1"
                         android:fontFamily="@font/fontNegritaC"
-                        />
+                        android:text="Calle:"
+                        android:textColor="@color/fontColorGris"
+                        android:textSize="@dimen/fontSize" />
 
                     <LinearLayout
                         android:id="@+id/setCalle1"
                         android:layout_width="0dp"
-                        android:layout_weight="1"
                         android:layout_height="35dp"
+                        android:layout_weight="1"
                         android:background="@drawable/rect_gray_border"
                         android:orientation="vertical"
-                        android:padding="5dp"
-                        >
+                        android:padding="5dp">
 
 
                         <Spinner
@@ -240,48 +239,47 @@
                             android:layout_height="10dp"
                             android:layout_weight="30"
                             android:background="@drawable/custom_spinner"
+                            android:fontFamily="@font/fontNormalC"
                             android:spinnerMode="dropdown"
                             android:textColor="@color/fontColorNegro"
-                            android:textSize="@dimen/fontSize"
-                            android:fontFamily="@font/fontNormalC"
-                            />
+                            android:textSize="@dimen/fontSize" />
                     </LinearLayout>
                 </LinearLayout>
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="0.5dp"
-                    android:background="@color/divider"
-                    ></LinearLayout>
+                    android:background="@color/divider"></LinearLayout>
+
                 <LinearLayout
                     android:id="@+id/numero"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:paddingLeft="16dp"
-                    android:paddingRight="16dp"
                     android:paddingTop="12dp"
+                    android:paddingRight="16dp"
                     android:paddingBottom="12dp">
 
 
                     <TextView
                         android:layout_width="0dp"
-                        android:layout_weight="1"
                         android:layout_height="wrap_content"
-                        android:text="Número:"
                         android:layout_gravity="center"
-                        android:textColor="@color/fontColorGris"
-                        android:textSize="@dimen/fontSize"
+                        android:layout_weight="1"
                         android:fontFamily="@font/fontNegritaC"
-                        />
+                        android:text="Número:"
+                        android:textColor="@color/fontColorGris"
+                        android:textSize="@dimen/fontSize" />
+
                     <LinearLayout
                         android:id="@+id/setNumero1"
                         android:layout_width="0dp"
-                        android:layout_weight="1"
                         android:layout_height="35dp"
+                        android:layout_weight="1"
                         android:background="@drawable/rect_gray_border"
                         android:orientation="vertical"
-                        android:padding="5dp"
-                        >
+                        android:padding="5dp">
 
 
                         <Spinner
@@ -290,21 +288,17 @@
                             android:layout_height="10dp"
                             android:layout_weight="30"
                             android:background="@drawable/custom_spinner"
+                            android:fontFamily="@font/fontNormalC"
                             android:spinnerMode="dropdown"
                             android:textColor="@color/fontColorNegro"
-                            android:textSize="@dimen/fontSize"
-                            android:fontFamily="@font/fontNormalC"
-                            />
+                            android:textSize="@dimen/fontSize" />
                     </LinearLayout>
                 </LinearLayout>
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="0.5dp"
-                    android:background="@color/divider"
-                    ></LinearLayout>
-
-
-
+                    android:background="@color/divider"></LinearLayout>
 
 
                 <LinearLayout
@@ -313,8 +307,8 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:paddingLeft="16dp"
-                    android:paddingRight="16dp"
                     android:paddingTop="12dp"
+                    android:paddingRight="16dp"
                     android:paddingBottom="12dp"
                     android:visibility="visible">
 
@@ -322,27 +316,23 @@
                     <TextView
                         android:id="@+id/pasajeros"
                         android:layout_width="0dp"
-                        android:layout_weight="1"
                         android:layout_height="wrap_content"
-                        android:text="Acompañantes (Opcional) : "
                         android:layout_gravity="center"
-                        android:textColor="@color/fontColorGris"
-                        android:textSize="@dimen/fontSize"
+                        android:layout_weight="1"
                         android:fontFamily="@font/fontNegritaC"
-                        />
-
-
+                        android:text="Acompañantes (Opcional) : "
+                        android:textColor="@color/fontColorGris"
+                        android:textSize="@dimen/fontSize" />
 
 
                     <LinearLayout
                         android:id="@+id/setPasajeros1"
                         android:layout_width="0dp"
-                        android:layout_weight="1"
                         android:layout_height="35dp"
+                        android:layout_weight="1"
                         android:background="@drawable/rect_gray_border"
                         android:orientation="vertical"
-                        android:padding="5dp"
-                        >
+                        android:padding="5dp">
 
 
                         <Spinner
@@ -351,39 +341,38 @@
                             android:layout_height="10dp"
                             android:layout_weight="30"
                             android:background="@drawable/custom_spinner"
+                            android:fontFamily="@font/fontNormalC"
                             android:spinnerMode="dropdown"
                             android:textColor="@color/fontColorNegro"
-                            android:textSize="@dimen/fontSize"
-                            android:fontFamily="@font/fontNormalC"
-                            />
+                            android:textSize="@dimen/fontSize" />
                     </LinearLayout>
 
                 </LinearLayout>
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="0.5dp"
-                    android:background="@color/divider"
-                    ></LinearLayout>
+                    android:background="@color/divider"></LinearLayout>
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:paddingLeft="16dp"
-                    android:paddingRight="16dp"
                     android:paddingTop="12dp"
+                    android:paddingRight="16dp"
                     android:paddingBottom="12dp">
 
 
                     <TextView
                         android:layout_width="0dp"
-                        android:layout_weight="1"
                         android:layout_height="wrap_content"
-                        android:text="Comentarios:"
                         android:layout_gravity="center"
-                        android:textColor="@color/fontColorGris"
-                        android:textSize="@dimen/fontSize"
+                        android:layout_weight="1"
                         android:fontFamily="@font/fontNegritaC"
-                        />
+                        android:text="Comentarios:"
+                        android:textColor="@color/fontColorGris"
+                        android:textSize="@dimen/fontSize" />
 
                     <customfonts.MyEditText
                         android:id="@+id/setComentarios"
@@ -391,18 +380,15 @@
                         android:layout_height="100dp"
                         android:layout_weight="1"
                         android:textColor="@color/fontColorNegro"
-                        android:textSize="@dimen/fontSize"
-                        />
-
-
+                        android:textSize="@dimen/fontSize" />
 
 
                 </LinearLayout>
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="0.5dp"
-                    android:background="@color/divider"
-                    ></LinearLayout>
+                    android:background="@color/divider"></LinearLayout>
 
                 <LinearLayout
                     android:id="@+id/CPlacasTexto"
@@ -410,40 +396,38 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:paddingLeft="16dp"
-                    android:paddingRight="16dp"
                     android:paddingTop="12dp"
+                    android:paddingRight="16dp"
                     android:paddingBottom="12dp"
                     android:visibility="visible">
-
 
 
                     <TextView
                         android:id="@+id/placas_texto"
                         android:layout_width="0dp"
-                        android:layout_weight="1"
                         android:layout_height="wrap_content"
-                        android:text="Placas / Cono:"
                         android:layout_gravity="center"
-                        android:textColor="@color/fontColorGris"
-                        android:textSize="@dimen/fontSize"
+                        android:layout_weight="1"
                         android:fontFamily="@font/fontNegritaC"
-                        />
+                        android:text="Placas / Cono:"
+                        android:textColor="@color/fontColorGris"
+                        android:textSize="@dimen/fontSize" />
+
                     <customfonts.MyEditText
                         android:id="@+id/setPlacas"
                         android:layout_width="0dp"
-                        android:layout_weight="1"
                         android:layout_height="wrap_content"
+                        android:layout_weight="1"
                         android:textColor="@color/fontColorNegro"
-                        android:textSize="@dimen/fontSize"
-                        />
+                        android:textSize="@dimen/fontSize" />
 
                 </LinearLayout>
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="0.5dp"
                     android:background="@color/divider"
-                    android:visibility="visible"
-                    ></LinearLayout>
+                    android:visibility="visible"></LinearLayout>
 
                 <LinearLayout
                     android:id="@+id/registrar1"
@@ -451,20 +435,19 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:paddingLeft="16dp"
-                    android:paddingRight="16dp"
                     android:paddingTop="12dp"
+                    android:paddingRight="16dp"
                     android:paddingBottom="12dp"
                     android:visibility="gone">
 
 
                     <TextView
                         android:layout_width="0dp"
-                        android:layout_weight="1"
                         android:layout_height="wrap_content"
-                        android:textSize="@dimen/fontSize"
-                        android:textColor="@color/fontColorGris"
                         android:layout_gravity="center"
-                        />
+                        android:layout_weight="1"
+                        android:textColor="@color/fontColorGris"
+                        android:textSize="@dimen/fontSize" />
 
                     <Button
                         android:id="@+id/reg1"
@@ -473,12 +456,11 @@
                         android:layout_gravity="center"
                         android:layout_weight="1"
                         android:background="@drawable/boton_descargar"
+                        android:fontFamily="@font/fontNegritaC"
                         android:gravity="center"
                         android:text="REGISTRAR"
                         android:textColor="@color/FormTextColor"
-                        android:textSize="@dimen/fontSize"
-                        android:fontFamily="@font/fontNegritaC"
-                        />
+                        android:textSize="@dimen/fontSize" />
 
                 </LinearLayout>
 
@@ -488,9 +470,7 @@
                     android:layout_height="0.5dp"
                     android:background="@color/divider"
                     android:orientation="vertical"
-                    android:visibility="gone"
-                    >
-                </LinearLayout>
+                    android:visibility="gone"></LinearLayout>
 
                 <LinearLayout
                     android:id="@+id/Foto1"
@@ -498,21 +478,20 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:paddingLeft="16dp"
-                    android:paddingRight="16dp"
                     android:paddingTop="12dp"
+                    android:paddingRight="16dp"
                     android:paddingBottom="12dp"
                     android:visibility="gone">
 
                     <TextView
                         android:id="@+id/nombre_foto1"
                         android:layout_width="0dp"
-                        android:layout_weight="1"
                         android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:fontFamily="@font/fontNegritaC"
                         android:text="foto1"
                         android:textColor="@color/fontColorGris"
-                        android:textSize="@dimen/fontSize"
-                        android:fontFamily="@font/fontNegritaC"
-                        />
+                        android:textSize="@dimen/fontSize" />
 
                     <Button
                         android:id="@+id/btn_foto1"
@@ -521,12 +500,11 @@
                         android:layout_gravity="center"
                         android:layout_weight="1"
                         android:background="@drawable/boton_descargar"
+                        android:fontFamily="@font/fontNegritaC"
                         android:gravity="center"
                         android:text="TOMAR FOTO"
                         android:textColor="@color/FormTextColor"
-                        android:textSize="@dimen/fontSize"
-                        android:fontFamily="@font/fontNegritaC"
-                        />
+                        android:textSize="@dimen/fontSize" />
 
                 </LinearLayout>
 
@@ -544,8 +522,8 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:paddingLeft="16dp"
-                    android:paddingRight="16dp"
                     android:paddingTop="12dp"
+                    android:paddingRight="16dp"
                     android:paddingBottom="12dp"
                     android:visibility="gone">
 
@@ -554,38 +532,36 @@
                         android:layout_width="match_parent"
                         android:layout_height="161dp"
                         android:layout_marginStart="10dp"
-                        android:layout_marginEnd="10dp"
-                        />
+                        android:layout_marginEnd="10dp" />
                 </LinearLayout>
+
                 <LinearLayout
                     android:id="@+id/espacio3"
                     android:layout_width="match_parent"
                     android:layout_height="0.5dp"
                     android:background="@color/divider"
                     android:orientation="vertical"
-                    android:visibility="gone">
-                </LinearLayout>
+                    android:visibility="gone"></LinearLayout>
+
                 <LinearLayout
                     android:id="@+id/registrar2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:paddingLeft="16dp"
-                    android:paddingRight="16dp"
                     android:paddingTop="12dp"
+                    android:paddingRight="16dp"
                     android:paddingBottom="12dp"
                     android:visibility="gone">
 
 
-
                     <TextView
                         android:layout_width="0dp"
-                        android:layout_weight="1"
                         android:layout_height="wrap_content"
-                        android:textSize="@dimen/fontSize"
-                        android:textColor="@color/fontColorGris"
                         android:layout_gravity="center"
-                        />
+                        android:layout_weight="1"
+                        android:textColor="@color/fontColorGris"
+                        android:textSize="@dimen/fontSize" />
 
                     <Button
                         android:id="@+id/reg2"
@@ -594,12 +570,11 @@
                         android:layout_gravity="center"
                         android:layout_weight="1"
                         android:background="@drawable/boton_descargar"
+                        android:fontFamily="@font/fontNegritaC"
                         android:gravity="center"
                         android:text="REGISTRAR"
                         android:textColor="@color/FormTextColor"
-                        android:textSize="@dimen/fontSize"
-                        android:fontFamily="@font/fontNegritaC"
-                        />
+                        android:textSize="@dimen/fontSize" />
 
                 </LinearLayout>
 
@@ -609,9 +584,7 @@
                     android:layout_height="0.5dp"
                     android:background="@color/divider"
                     android:orientation="vertical"
-                    android:visibility="gone"
-                    >
-                </LinearLayout>
+                    android:visibility="gone"></LinearLayout>
 
                 <LinearLayout
                     android:id="@+id/Foto2"
@@ -630,11 +603,10 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:layout_weight="1"
+                        android:fontFamily="@font/fontNegritaC"
                         android:text="foto2"
                         android:textColor="@color/fontColorGris"
-                        android:textSize="@dimen/fontSize"
-                        android:fontFamily="@font/fontNegritaC"
-                        />
+                        android:textSize="@dimen/fontSize" />
 
 
                     <Button
@@ -644,12 +616,11 @@
                         android:layout_gravity="center"
                         android:layout_weight="1"
                         android:background="@drawable/boton_descargar"
+                        android:fontFamily="@font/fontNegritaC"
                         android:gravity="center"
                         android:text="TOMAR FOTO"
                         android:textColor="@color/FormTextColor"
-                        android:textSize="@dimen/fontSize"
-                        android:fontFamily="@font/fontNegritaC"
-                        />
+                        android:textSize="@dimen/fontSize" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -658,8 +629,7 @@
                     android:layout_height="0.5dp"
                     android:background="@color/divider"
                     android:orientation="vertical"
-                    android:visibility="gone"
-                    ></LinearLayout>
+                    android:visibility="gone"></LinearLayout>
 
                 <LinearLayout
                     android:id="@+id/Foto2View"
@@ -667,8 +637,8 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:paddingLeft="16dp"
-                    android:paddingRight="16dp"
                     android:paddingTop="12dp"
+                    android:paddingRight="16dp"
                     android:paddingBottom="12dp"
                     android:visibility="gone">
 
@@ -677,19 +647,17 @@
                         android:layout_width="match_parent"
                         android:layout_height="161dp"
                         android:layout_marginStart="10dp"
-                        android:layout_marginEnd="10dp"
-                        />
+                        android:layout_marginEnd="10dp" />
 
                 </LinearLayout>
+
                 <LinearLayout
                     android:id="@+id/espacio6"
                     android:layout_width="match_parent"
                     android:layout_height="0.5dp"
                     android:background="@color/divider"
                     android:orientation="vertical"
-                    android:visibility="gone"
-                    >
-                </LinearLayout>
+                    android:visibility="gone"></LinearLayout>
 
                 <LinearLayout
                     android:id="@+id/registrar3"
@@ -697,20 +665,19 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:paddingLeft="16dp"
-                    android:paddingRight="16dp"
                     android:paddingTop="12dp"
+                    android:paddingRight="16dp"
                     android:paddingBottom="12dp"
                     android:visibility="gone">
 
 
                     <TextView
                         android:layout_width="0dp"
-                        android:layout_weight="1"
                         android:layout_height="wrap_content"
-                        android:textSize="@dimen/fontSize"
-                        android:textColor="@color/fontColorGris"
                         android:layout_gravity="center"
-                        />
+                        android:layout_weight="1"
+                        android:textColor="@color/fontColorGris"
+                        android:textSize="@dimen/fontSize" />
 
                     <Button
                         android:id="@+id/reg3"
@@ -719,12 +686,11 @@
                         android:layout_gravity="center"
                         android:layout_weight="1"
                         android:background="@drawable/boton_descargar"
+                        android:fontFamily="@font/fontNegritaC"
                         android:gravity="center"
                         android:text="REGISTRAR"
                         android:textColor="@color/FormTextColor"
-                        android:textSize="@dimen/fontSize"
-                        android:fontFamily="@font/fontNegritaC"
-                        />
+                        android:textSize="@dimen/fontSize" />
 
                 </LinearLayout>
 
@@ -734,9 +700,7 @@
                     android:layout_height="0.5dp"
                     android:background="@color/divider"
                     android:orientation="vertical"
-                    android:visibility="gone"
-                    >
-                </LinearLayout>
+                    android:visibility="gone"></LinearLayout>
 
                 <LinearLayout
                     android:id="@+id/Foto3"
@@ -744,8 +708,8 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:paddingLeft="16dp"
-                    android:paddingRight="16dp"
                     android:paddingTop="12dp"
+                    android:paddingRight="16dp"
                     android:paddingBottom="12dp"
                     android:visibility="gone">
 
@@ -753,13 +717,12 @@
                     <TextView
                         android:id="@+id/nombre_foto3"
                         android:layout_width="0dp"
-                        android:layout_weight="1"
                         android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:fontFamily="@font/fontNegritaC"
                         android:text="foto3"
                         android:textColor="@color/fontColorGris"
-                        android:textSize="@dimen/fontSize"
-                        android:fontFamily="@font/fontNegritaC"
-                        />
+                        android:textSize="@dimen/fontSize" />
 
                     <Button
                         android:id="@+id/btn_foto3"
@@ -768,23 +731,21 @@
                         android:layout_gravity="center"
                         android:layout_weight="1"
                         android:background="@drawable/boton_descargar"
+                        android:fontFamily="@font/fontNegritaC"
                         android:gravity="center"
                         android:text="TOMAR FOTO"
                         android:textColor="@color/FormTextColor"
-                        android:textSize="@dimen/fontSize"
-                        android:fontFamily="@font/fontNegritaC"
-                        />
+                        android:textSize="@dimen/fontSize" />
 
                 </LinearLayout>
+
                 <LinearLayout
                     android:id="@+id/espacio8"
                     android:layout_width="match_parent"
                     android:layout_height="0.5dp"
                     android:background="@color/divider"
                     android:orientation="vertical"
-                    android:visibility="gone"
-                    >
-                </LinearLayout>
+                    android:visibility="gone"></LinearLayout>
 
                 <LinearLayout
                     android:id="@+id/Foto3View"
@@ -792,8 +753,8 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:paddingLeft="16dp"
-                    android:paddingRight="16dp"
                     android:paddingTop="12dp"
+                    android:paddingRight="16dp"
                     android:paddingBottom="12dp"
                     android:visibility="gone">
 
@@ -802,37 +763,36 @@
                         android:layout_width="match_parent"
                         android:layout_height="161dp"
                         android:layout_marginStart="10dp"
-                        android:layout_marginEnd="10dp"
-                        />
+                        android:layout_marginEnd="10dp" />
                 </LinearLayout>
+
                 <LinearLayout
                     android:id="@+id/espacio9"
                     android:layout_width="match_parent"
                     android:layout_height="0.5dp"
                     android:background="@color/divider"
                     android:orientation="vertical"
-                    android:visibility="gone"
-                    ></LinearLayout>
+                    android:visibility="gone"></LinearLayout>
+
                 <LinearLayout
                     android:id="@+id/registrar4"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:paddingLeft="16dp"
-                    android:paddingRight="16dp"
                     android:paddingTop="12dp"
+                    android:paddingRight="16dp"
                     android:paddingBottom="12dp"
                     android:visibility="gone">
 
 
                     <TextView
                         android:layout_width="0dp"
-                        android:layout_weight="1"
                         android:layout_height="wrap_content"
-                        android:textSize="@dimen/fontSize"
-                        android:textColor="@color/fontColorGris"
                         android:layout_gravity="center"
-                        />
+                        android:layout_weight="1"
+                        android:textColor="@color/fontColorGris"
+                        android:textSize="@dimen/fontSize" />
 
                     <Button
                         android:id="@+id/reg4"
@@ -841,12 +801,11 @@
                         android:layout_gravity="center"
                         android:layout_weight="1"
                         android:background="@drawable/boton_descargar"
+                        android:fontFamily="@font/fontNegritaC"
                         android:gravity="center"
                         android:text="REGISTRAR"
                         android:textColor="@color/FormTextColor"
-                        android:textSize="@dimen/fontSize"
-                        android:fontFamily="@font/fontNegritaC"
-                        />
+                        android:textSize="@dimen/fontSize" />
 
                 </LinearLayout>
 
@@ -856,9 +815,7 @@
                     android:layout_height="0.5dp"
                     android:background="@color/divider"
                     android:orientation="vertical"
-                    android:visibility="gone"
-                    >
-                </LinearLayout>
+                    android:visibility="gone"></LinearLayout>
 
 
             </LinearLayout>
@@ -870,17 +827,18 @@
         android:id="@+id/rlDenegado"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="gone"
-        >
+        android:visibility="gone">
+
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent">
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_gravity="center"
                 android:layout_centerInParent="true"
+                android:layout_gravity="center"
+                android:orientation="vertical"
                 android:textAlignment="center">
 
                 <LinearLayout
@@ -888,10 +846,9 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:paddingLeft="16dp"
-                    android:paddingRight="16dp"
                     android:paddingTop="12dp"
-                    android:paddingBottom="12dp"
-                    >
+                    android:paddingRight="16dp"
+                    android:paddingBottom="12dp">
 
 
                     <TextView
@@ -900,23 +857,22 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:layout_weight="1"
-                        android:text="¡ AVISO !"
-                        android:textSize="@dimen/fontSizeEncabezados"
                         android:background="@color/fontColorRojo"
-                        android:textColor="@color/fontColorBlanco"
-                        android:textAlignment="center"
                         android:fontFamily="@font/fontNegritaC"
-                        />
+                        android:text="¡ AVISO !"
+                        android:textAlignment="center"
+                        android:textColor="@color/fontColorBlanco"
+                        android:textSize="@dimen/fontSizeEncabezados" />
                 </LinearLayout>
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:paddingLeft="16dp"
-                    android:paddingRight="16dp"
                     android:paddingTop="12dp"
-                    android:paddingBottom="12dp"
-                    >
+                    android:paddingRight="16dp"
+                    android:paddingBottom="12dp">
 
                     <TextView
                         android:id="@+id/setMensaje"
@@ -924,12 +880,11 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:layout_weight="1"
-                        android:text="¡ AVISO !"
-                        android:textSize="@dimen/fontSizeEncabezados"
-                        android:textColor="@color/fontColorNegro"
-                        android:textAlignment="center"
                         android:fontFamily="@font/fontNegritaC"
-                        />
+                        android:text="¡ AVISO !"
+                        android:textAlignment="center"
+                        android:textColor="@color/fontColorNegro"
+                        android:textSize="@dimen/fontSizeEncabezados" />
                 </LinearLayout>
             </LinearLayout>
         </ScrollView>

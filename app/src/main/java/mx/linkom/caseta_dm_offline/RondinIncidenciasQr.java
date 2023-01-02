@@ -841,6 +841,14 @@ public class RondinIncidenciasQr extends Menu {
             hora = hour+":"+minute;
         }
 
+        String segundos = "00";
+
+        if (second < 10){
+            segundos = "0"+second;
+        }else {
+            segundos = ""+second;
+        }
+
 
         ContentValues values = new ContentValues();
         values.put("id_residencial", Conf.getResid().trim());
@@ -857,7 +865,7 @@ public class RondinIncidenciasQr extends Menu {
             e.printStackTrace();
         }
         values.put("dia", fecha);
-        values.put("hora", hora);
+        values.put("hora", hora+":"+segundos);
         values.put("detalle", Comentarios.getText().toString().trim());
         values.put("accion", Accion.getText().toString().trim());
         values.put("foto1", ima1);

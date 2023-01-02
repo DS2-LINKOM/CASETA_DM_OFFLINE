@@ -1,7 +1,11 @@
 package mx.linkom.caseta_dm_offline;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -11,6 +15,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.RequiresApi;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -30,12 +36,17 @@ import java.util.Map;
 
 import mx.linkom.caseta_dm_offline.adaptadores.ModuloClassGrid;
 import mx.linkom.caseta_dm_offline.adaptadores.adaptador_Modulo;
+import mx.linkom.caseta_dm_offline.offline.Database.UrisContentProvider;
+import mx.linkom.caseta_dm_offline.offline.Global_info;
 
 public class EntradasSalidasActivity extends  mx.linkom.caseta_dm_offline.Menu {
     private FirebaseAuth fAuth;
     private Configuracion Conf;
     JSONArray ja1;
     public GridView gridList,gridList2,gridList3,gridList4,gridList5;
+
+    ImageView iconoInternet;
+    boolean Offline = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,15 +59,103 @@ public class EntradasSalidasActivity extends  mx.linkom.caseta_dm_offline.Menu {
         gridList3 = (GridView)findViewById(R.id.gridList3);
         gridList4 = (GridView)findViewById(R.id.gridList4);
         gridList5 = (GridView)findViewById(R.id.gridList5);
+        iconoInternet = (ImageView) findViewById(R.id.iconoInternetEntradasSalidas);
 
+        if (Global_info.getINTERNET().equals("Si")){
+            iconoInternet.setImageResource(R.drawable.ic_online);
+            Offline = false;
+        }else {
+            iconoInternet.setImageResource(R.drawable.ic_offline);
+            Offline = true;
+        }
+
+        iconoInternet.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (Offline){
+                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(EntradasSalidasActivity.this);
+                    alertDialogBuilder.setTitle("Alerta");
+                    alertDialogBuilder
+                            .setMessage("Aplicación funcionando en modo offline \n\nDatos actualizados hasta: \n\n"+Global_info.getULTIMA_ACTUALIZACION())
+                            .setPositiveButton("Ok",new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                }
+                            }).create().show();
+                }else {
+                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(EntradasSalidasActivity.this);
+                    alertDialogBuilder.setTitle("Alerta");
+                    alertDialogBuilder
+                            .setMessage("Aplicación funcionando en modo online \n\nDatos actualizados para funcionamiento en modo offline hasta: \n\n"+Global_info.getULTIMA_ACTUALIZACION())
+                            .setPositiveButton("Ok",new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                }
+                            }).create().show();
+                }
+            }
+        });
 
     }
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onStart() {
         super.onStart();
-        menu();
+        if (Offline){
+            menuOffline();
+        }else {
+            menu();
+        }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public void menuOffline(){
+
+        try {
+            Cursor cursor = getContentResolver().query(UrisContentProvider.URI_CONTENIDO_APP_CASETA, null, null, null);
+
+            ja1 = new JSONArray();
+
+            if (cursor.moveToFirst()){
+                ja1.put(cursor.getString(0));
+                ja1.put(cursor.getString(1));
+                ja1.put(cursor.getString(2));
+                ja1.put(cursor.getString(3));
+                ja1.put(cursor.getString(4));
+                ja1.put(cursor.getString(5));
+                ja1.put(cursor.getString(6));
+                ja1.put(cursor.getString(7));
+                ja1.put(cursor.getString(8));
+                ja1.put(cursor.getString(9));
+                ja1.put(cursor.getString(10));
+                ja1.put(cursor.getString(11));
+                ja1.put(cursor.getString(12));
+
+            }
+            cursor.close();
+
+
+            if(ja1.getString(2).equals("1")) {
+                Conf.setTicketE(ja1.getString(11));
+            }else{
+                Conf.setTicketE("0");
+            }
+
+            if(ja1.getString(3).equals("1")) {
+                Conf.setTicketR(ja1.getString(12));
+            }else{
+                Conf.setTicketR("0");
+            }
+
+
+            llenado();
+            llenado2();
+            llenado3();
+
+        }catch (Exception ex){
+            System.out.println(ex.toString());
+            Toast.makeText(getApplicationContext(), "Usuario y/o Contraseña Incorrectos", Toast.LENGTH_LONG).show();
+        }
+
+    }
 
 
     public void menu() {

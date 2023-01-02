@@ -2,7 +2,9 @@ package mx.linkom.caseta_dm_offline;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Environment;
@@ -12,6 +14,7 @@ import android.print.PrintManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
@@ -64,6 +67,8 @@ import io.reactivex.schedulers.Schedulers;
 import mx.linkom.caseta_dm_offline.Model.CasetaModel;
 import mx.linkom.caseta_dm_offline.Utils.PDFUtils;
 import mx.linkom.caseta_dm_offline.Utils.PdfDocumentAdapter;
+import mx.linkom.caseta_dm_offline.offline.Database.UrisContentProvider;
+import mx.linkom.caseta_dm_offline.offline.Global_info;
 
 public class TicketImprimirActivity extends mx.linkom.caseta_dm_offline.Menu {
     Configuracion Conf;
@@ -74,6 +79,11 @@ public class TicketImprimirActivity extends mx.linkom.caseta_dm_offline.Menu {
     JSONArray ja1,ja2,ja3,ja4;
     String tipo;
     Button regresar,imprimir;
+
+    ImageView iconoInternet;
+    boolean Offline = false;
+
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_espera);
@@ -85,7 +95,46 @@ public class TicketImprimirActivity extends mx.linkom.caseta_dm_offline.Menu {
 
         Conf = new Configuracion(this);
 
-        Visita();
+        iconoInternet = (ImageView) findViewById(R.id.iconoInternetTicketImprimir);
+
+        if (Global_info.getINTERNET().equals("Si")){
+            iconoInternet.setImageResource(R.drawable.ic_online);
+            Offline = false;
+        }else {
+            iconoInternet.setImageResource(R.drawable.ic_offline);
+            Offline = true;
+        }
+
+        iconoInternet.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (Offline){
+                    android.app.AlertDialog.Builder alertDialogBuilder = new android.app.AlertDialog.Builder(TicketImprimirActivity.this);
+                    alertDialogBuilder.setTitle("Alerta");
+                    alertDialogBuilder
+                            .setMessage("Aplicación funcionando en modo offline \n\nDatos actualizados hasta: \n\n"+Global_info.getULTIMA_ACTUALIZACION())
+                            .setPositiveButton("Ok",new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                }
+                            }).create().show();
+                }else {
+                    android.app.AlertDialog.Builder alertDialogBuilder = new android.app.AlertDialog.Builder(TicketImprimirActivity.this);
+                    alertDialogBuilder.setTitle("Alerta");
+                    alertDialogBuilder
+                            .setMessage("Aplicación funcionando en modo online \n\nDatos actualizados para funcionamiento en modo offline hasta: \n\n"+Global_info.getULTIMA_ACTUALIZACION())
+                            .setPositiveButton("Ok",new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                }
+                            }).create().show();
+                }
+            }
+        });
+
+        if (Offline){
+            VisitaOffline();
+        }else {
+            Visita();
+        }
 
         regresar.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -145,6 +194,96 @@ public class TicketImprimirActivity extends mx.linkom.caseta_dm_offline.Menu {
         requestQueue.add(stringRequest);
     }
 
+    public void VisitaOffline(){
+        Log.e("info", "visita offline");
+        try {
+            String qr = Conf.getQR().trim();
+            String id_resid= Conf.getResid().trim();
+            String parametros[] = {qr, id_resid};
+
+            Cursor cursor = getContentResolver().query(UrisContentProvider.URI_CONTENIDO_VISITA, null, "vst1", parametros, null);
+
+            if (cursor.moveToFirst()){
+                ja1 = new JSONArray();
+                ja1.put(cursor.getString(0));
+                ja1.put(cursor.getString(1));
+                ja1.put(cursor.getString(2));
+                ja1.put(cursor.getString(3));
+                ja1.put(cursor.getString(4));
+                ja1.put(cursor.getString(5));
+                ja1.put(cursor.getString(6));
+                ja1.put(cursor.getString(7));
+                ja1.put(cursor.getString(8));
+                ja1.put(cursor.getString(9));
+                ja1.put(cursor.getString(10));
+                ja1.put(cursor.getString(11));
+                ja1.put(cursor.getString(12));
+                ja1.put(cursor.getString(13));
+                ja1.put(cursor.getString(14));
+                ja1.put(cursor.getString(15));
+
+                UsuarioOffline(ja1.getString(2));
+            }else {
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(TicketImprimirActivity.this);
+                alertDialogBuilder.setTitle("Alerta");
+                alertDialogBuilder
+                        .setMessage("Error al obtener datos de la visita")
+                        .setPositiveButton("Ok",new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                Intent i = new Intent(getApplicationContext(), EscaneoVisitaActivity.class);
+                                startActivity(i);
+                                finish();
+                            }
+                        }).create().show();
+            }
+            cursor.close();
+
+        }catch (Exception ex){
+            Log.e("Exception", ex.toString());
+        }
+    }
+
+    public void UsuarioOffline(final String IdUsu){ //DATOS USUARIO
+        Log.e("info", "usuario offline");
+        try {
+            String id_residencial = Conf.getResid().trim();
+            String id = IdUsu.trim();
+
+            String parametros[] ={id, id_residencial};
+
+            Cursor cursor = getContentResolver().query(UrisContentProvider.URI_CONTENIDO_USUARIO, null, "dts_accesso_autos", parametros, null);
+
+            if (cursor.moveToFirst()){
+                ja2 = new JSONArray();
+
+                ja2.put(cursor.getString(0));
+                ja2.put(cursor.getString(1));
+                ja2.put(cursor.getString(2));
+                ja2.put(cursor.getString(3));
+                ja2.put(cursor.getString(4));
+                ja2.put(cursor.getString(5));
+                ja2.put(cursor.getString(6));
+
+                dtlLugarOffline(ja2.getString(0));
+            }else {
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(TicketImprimirActivity.this);
+                alertDialogBuilder.setTitle("Alerta");
+                alertDialogBuilder
+                        .setMessage("Error al obtener datos de usuario")
+                        .setPositiveButton("Ok",new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                Intent i = new Intent(getApplicationContext(), EscaneoVisitaActivity.class);
+                                startActivity(i);
+                                finish();
+                            }
+                        }).create().show();
+            }
+            cursor.close();
+        }catch (Exception ex){
+            Log.e("Exception", ex.toString());
+        }
+
+    }
 
     public void Usuario(final String IdUsu){ //DATOS USUARIO
 
@@ -183,6 +322,40 @@ public class TicketImprimirActivity extends mx.linkom.caseta_dm_offline.Menu {
     }
 
 
+    public void dtlLugarOffline(final String idUsuario){
+        Log.e("info", "dtllugar offline");
+        try {
+            String id_residencial = Conf.getResid().trim();
+            String id = idUsuario.trim();
+
+            String parametros[] ={id_residencial, id};
+
+            Cursor cursor = getContentResolver().query(UrisContentProvider.URI_CONTENIDO_LUGAR, null, "dtl_lugar_usuario", parametros, null);
+
+            if (cursor.moveToFirst()){
+                ja3 = new JSONArray();
+                ja3.put(cursor.getString(0));
+
+                DtlOffline();
+
+            }else {
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(TicketImprimirActivity.this);
+                alertDialogBuilder.setTitle("Alerta");
+                alertDialogBuilder
+                        .setMessage("Error al obtener datos en modo offline")
+                        .setPositiveButton("Ok",new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                Intent i = new Intent(getApplicationContext(), EscaneoVisitaActivity.class);
+                                startActivity(i);
+                                finish();
+                            }
+                        }).create().show();
+            }
+            cursor.close();
+        }catch (Exception ex){
+            Log.e("Exception", ex.toString());
+        }
+    }
 
     public void dtlLugar(final String idUsuario){
         String URLResidencial = "https://demoarboledas.privadaarboledas.net/plataforma/casetaV2/controlador/CC/vst_php3.php?bd_name="+Conf.getBd()+"&bd_user="+Conf.getBdUsu()+"&bd_pwd="+Conf.getBdCon();
@@ -282,6 +455,76 @@ public class TicketImprimirActivity extends mx.linkom.caseta_dm_offline.Menu {
             }
         };
         requestQueue.add(stringRequest);
+    }
+
+    public void DtlOffline(){
+        try {
+            String id = ja1.getString(0);
+            String id_residencial = Conf.getResid().trim();
+            String parametros[] = {id_residencial, id};
+
+            Cursor cursor = getContentResolver().query(UrisContentProvider.URI_CONTENIDO_DTL_ENTRADAS_SALIDAS, null, "vst_reg_8", parametros, null);
+
+            if (cursor.moveToFirst()){
+                ja4 = new JSONArray();
+                ja4.put(cursor.getString(0));
+                ja4.put(cursor.getString(1));
+                ja4.put(cursor.getString(2));
+                ja4.put(cursor.getString(3));
+                ja4.put(cursor.getString(4));
+                ja4.put(cursor.getString(5));
+                ja4.put(cursor.getString(6));
+                ja4.put(cursor.getString(7));
+                ja4.put(cursor.getString(8));
+                ja4.put(cursor.getString(9));
+                ja4.put(cursor.getString(10));
+                ja4.put(cursor.getString(11));
+                ja4.put(cursor.getString(12));
+                ja4.put(cursor.getString(13));
+                ja4.put(cursor.getString(14));
+                ja4.put(cursor.getString(15));
+
+
+                Dexter.withActivity(TicketImprimirActivity.this)
+                        .withPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                        .withListener(new PermissionListener() {
+                            @Override
+                            public void onPermissionGranted(PermissionGrantedResponse permissionGrantedResponse) {
+                                createPDFFile(new StringBuilder(getAppPath()).append(FILE_PRINT).toString());
+                            }
+
+                            @Override
+                            public void onPermissionDenied(PermissionDeniedResponse response) {
+                                Toast.makeText(TicketImprimirActivity.this,""+response.getPermissionName()+"need enable", Toast.LENGTH_SHORT).show();
+                            }
+
+                            @Override
+                            public void onPermissionRationaleShouldBeShown(PermissionRequest permissionRequest, PermissionToken permissionToken) {
+
+                            }
+                        })
+                        .check();
+
+                //addDatos();
+
+            }else {
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(TicketImprimirActivity.this);
+                alertDialogBuilder.setTitle("Alerta");
+                alertDialogBuilder
+                        .setMessage("Error al obtener datos de visita en modo offline")
+                        .setPositiveButton("Ok",new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                Intent i = new Intent(getApplicationContext(), EscaneoVisitaActivity.class);
+                                startActivity(i);
+                                finish();
+                            }
+                        }).create().show();
+            }
+            cursor.close();
+        }catch (Exception ex){
+            Log.e("Exception", ex.toString());
+        }
+
     }
 
     

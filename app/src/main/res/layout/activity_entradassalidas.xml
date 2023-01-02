@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
     android:background="@color/white"
-    >
-
+    android:orientation="vertical">
 
 
     <ScrollView
@@ -21,9 +19,8 @@
             <ImageView
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
-                android:src="@drawable/feb"
                 android:scaleType="fitXY"
-                />
+                android:src="@drawable/feb" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -31,7 +28,7 @@
                 android:orientation="vertical">
 
 
-                <LinearLayout
+                <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
@@ -41,69 +38,73 @@
                     <ImageView
                         android:layout_width="44dp"
                         android:layout_height="28dp"
-                        android:src="@drawable/menu"
+                        android:layout_alignParentStart="true"
                         android:onClick="showPopup"
-                        />
+                        android:src="@drawable/menu" />
+
                     <TextView
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_centerHorizontal="true"
                         android:layout_marginLeft="22dp"
+                        android:fontFamily="@font/fontNegritaC"
                         android:text="Entradas y Salidas"
                         android:textColor="@color/fontColorBlanco"
-                        android:textSize="@dimen/fontSizeEncabezados"
-                        android:fontFamily="@font/fontNegritaC"
-                        />
+                        android:textSize="@dimen/fontSizeEncabezados" />
 
-                </LinearLayout>
+                    <ImageView
+                        android:id="@+id/iconoInternetEntradasSalidas"
+                        android:layout_width="44dp"
+                        android:layout_height="28dp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_weight="1"
+                        app:srcCompat="@drawable/ic_offline" />
+
+                </RelativeLayout>
             </LinearLayout>
         </FrameLayout>
     </ScrollView>
 
 
+    <GridView
+        android:id="@+id/gridList"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:numColumns="2"
+        android:textAlignment="center"></GridView>
 
-            <GridView
-                android:id="@+id/gridList"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/white"
-                android:numColumns="2"
-                android:textAlignment="center"
-                ></GridView>
     <GridView
         android:id="@+id/gridList2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/white"
         android:numColumns="2"
-        android:textAlignment="center"
-        ></GridView>
+        android:textAlignment="center"></GridView>
+
     <GridView
         android:id="@+id/gridList3"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/white"
         android:numColumns="2"
-        android:textAlignment="center"
-        ></GridView>
+        android:textAlignment="center"></GridView>
+
     <GridView
         android:id="@+id/gridList4"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/white"
         android:numColumns="2"
-        android:textAlignment="center"
-        ></GridView>
+        android:textAlignment="center"></GridView>
+
     <GridView
         android:id="@+id/gridList5"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/white"
         android:numColumns="1"
-        android:textAlignment="center"
-        ></GridView>
-
-
-
+        android:textAlignment="center"></GridView>
 
 
 </LinearLayout>

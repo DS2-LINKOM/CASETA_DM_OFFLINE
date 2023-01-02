@@ -38,6 +38,16 @@ public class ContentProvider extends android.content.ContentProvider {
     public static final int UBICACIONES = 1400;
     public static final int UBICACIONES_QR = 1500;
     public static final int APP_CASETA_IMA = 1600;
+    public static final int LUGAR = 1700;
+    public static final int USUARIO = 1800;
+    public static final int DTL_LUGAR_USUARIO = 1900;
+    public static final int CORRESPONDENCIA = 2000;
+    public static final int DTL_ENTRADAS_SALIDAS = 2100;
+    public static final int VISITA = 2200;
+    public static final int AUTO = 2300;
+    public static final int CAJONES = 2400;
+    public static final int DTL_ENTRADAS_SALIDAS_AUTOS = 2500;
+
 
 
     public static final String AUTORIDAD = "mx.linkom.caseta_dm_offline";
@@ -60,6 +70,15 @@ public class ContentProvider extends android.content.ContentProvider {
         uriMatcher.addURI(AUTORIDAD, "sesion_caseta", SESION_CASETA);
         uriMatcher.addURI(AUTORIDAD, "ubicaciones", UBICACIONES);
         uriMatcher.addURI(AUTORIDAD, "ubicaciones_qr", UBICACIONES_QR);
+        uriMatcher.addURI(AUTORIDAD, "lugar", LUGAR);
+        uriMatcher.addURI(AUTORIDAD, "usuario", USUARIO);
+        uriMatcher.addURI(AUTORIDAD, "dtl_lugar_usuario", DTL_LUGAR_USUARIO);
+        uriMatcher.addURI(AUTORIDAD, "correspondencia", CORRESPONDENCIA);
+        uriMatcher.addURI(AUTORIDAD, "dtl_entradas_salidas", DTL_ENTRADAS_SALIDAS);
+        uriMatcher.addURI(AUTORIDAD, "visita", VISITA);
+        uriMatcher.addURI(AUTORIDAD, "auto", AUTO);
+        uriMatcher.addURI(AUTORIDAD, "cajones", CAJONES);
+        uriMatcher.addURI(AUTORIDAD, "dtl_entradas_salidas_autos", DTL_ENTRADAS_SALIDAS_AUTOS);
     }
 
     //Inicializa el provider y el objetivo database Helper
@@ -86,6 +105,9 @@ public class ContentProvider extends android.content.ContentProvider {
         switch (match){
             case APP_CASETA:
                 cursor = bd.rawQuery("SELECT * FROM app_caseta" , null);
+                break;
+            case APP_CASETA_IMA:
+                cursor = bd.rawQuery("SELECT * FROM app_caseta_ima" , null);
                 break;
             case INCIDENCIAS:
                 cursor = bd.rawQuery("SELECT * FROM incidencias WHERE sqliteEstatus = 1",null);
@@ -146,6 +168,143 @@ public class ContentProvider extends android.content.ContentProvider {
             case RONDINES_INCIDENCIAS:
                 cursor = bd.rawQuery("SELECT * FROM rondines_incidencias WHERE sqliteEstatus = 1",null);
                 break;
+            case LUGAR:
+                if (selection.equals("numeros")){
+                    String calle = selectionArgs[0];
+                    String id_res_lugar_numeros = selectionArgs[1];
+                    cursor = bd.rawQuery("SELECT lugar.numero FROM lugar WHERE  lugar.calle="+"'"+calle+"'"+"  and id_residencial="+"'"+id_res_lugar_numeros+"'"+" and estatus=1",null);
+                }else if (selection.equals("calles")){
+                    String id_resi_lugar = selectionArgs[0];
+                    cursor = bd.rawQuery("SELECT DISTINCT(calle) as nombre FROM lugar WHERE estatus=1 and id_residencial="+"'"+id_resi_lugar+"'"+" order by nombre asc",null);
+                }else if (selection.equals("dtl_lugar_usuario")){
+                    String id_resi_lugar = selectionArgs[0];
+                    String id_usu = selectionArgs[1];
+                    cursor = bd.rawQuery("SELECT lugar.nombre FROM lugar,dtl_lugar_usuario WHERE dtl_lugar_usuario.id_usuario="+"'"+id_usu+"'"+" and dtl_lugar_usuario.id_residencial="+"'"+id_resi_lugar+"'"+" and lugar.id=dtl_lugar_usuario.id_lugar and lugar.estatus=1 and dtl_lugar_usuario.estatus=1",null);
+                }
+                else if (selection.equals("verificaUP")){
+                    String id_resi_lugar = selectionArgs[0];
+                    String calle_usu = selectionArgs[1];
+                    String numero_usu = selectionArgs[2];
+                    Log.e("CONSULTA ", "SELECT usuario.id,usuario.nombre,usuario.a_paterno,usuario.a_materno,usuario.correo_electronico,usuario.token FROM lugar,dtl_lugar_usuario,usuario WHERE lugar.id = (SELECT id FROM lugar WHERE lugar.calle="+"'"+calle_usu+"'"+" and lugar.numero="+"'"+numero_usu+"'"+" and id_residencial="+"'"+id_resi_lugar+"'"+" and estatus=1) and lugar.id=dtl_lugar_usuario.id_lugar and usuario.id=dtl_lugar_usuario.id_usuario and usuario.id_residencial="+"'"+id_resi_lugar+"'"+"");
+                    cursor = bd.rawQuery("SELECT usuario.id,usuario.nombre,usuario.a_paterno,usuario.a_materno,usuario.correo_electronico,usuario.token FROM lugar,dtl_lugar_usuario,usuario WHERE lugar.id = (SELECT id FROM lugar WHERE lugar.calle="+"'"+calle_usu+"'"+" and lugar.numero="+"'"+numero_usu+"'"+" and id_residencial="+"'"+id_resi_lugar+"'"+" and estatus=1) and lugar.id=dtl_lugar_usuario.id_lugar and usuario.id=dtl_lugar_usuario.id_usuario and usuario.id_residencial="+"'"+id_resi_lugar+"'"+"",null);
+                }else if (selection.equals("verificaUP2")){
+                    String id_resi_lugar = selectionArgs[0];
+                    String calle_usu = selectionArgs[1];
+                    String numero_usu = selectionArgs[2];
+                    Log.e("CONSULTA ", "SELECT usuario.id,usuario.nombre,usuario.a_paterno,usuario.a_materno, usuario.correo_electronico,usuario.token  FROM lugar,dtl_lugar_usuario,usuario WHERE lugar.id = (SELECT id FROM lugar WHERE lugar.calle="+"'"+calle_usu+"'"+" and lugar.numero="+"'"+numero_usu+"'"+" and id_residencial="+"'"+id_resi_lugar+"'"+" and estatus=1) and lugar.id=dtl_lugar_usuario.id_lugar and usuario.id=dtl_lugar_usuario.id_usuario and usuario.id_residencial="+"'"+id_resi_lugar+"'"+" and usuario.tipo_usuario=2");
+                    cursor = bd.rawQuery("SELECT usuario.id,usuario.nombre,usuario.a_paterno,usuario.a_materno, usuario.correo_electronico,usuario.token  FROM lugar,dtl_lugar_usuario,usuario WHERE lugar.id = (SELECT id FROM lugar WHERE lugar.calle="+"'"+calle_usu+"'"+" and lugar.numero="+"'"+numero_usu+"'"+" and id_residencial="+"'"+id_resi_lugar+"'"+" and estatus=1) and lugar.id=dtl_lugar_usuario.id_lugar and usuario.id=dtl_lugar_usuario.id_usuario and usuario.id_residencial="+"'"+id_resi_lugar+"'"+" and usuario.tipo_usuario=2",null);
+                }
+
+
+                break;
+            case USUARIO:
+
+                if (selection.equals("usuarios")){
+                    String calle_usuario = selectionArgs[0];
+                    String numero_usuario = selectionArgs[1];
+                    String id_residencial_usuario = selectionArgs[2];
+
+                    cursor = bd.rawQuery("SELECT usuario.id,usuario.nombre,usuario.a_paterno,usuario.a_materno,usuario.correo_electronico,usuario.token,usuario.notificacion  FROM usuario,lugar, dtl_lugar_usuario WHERE usuario.id_residencial="+"'"+id_residencial_usuario+"'"+" and lugar.numero="+"'"+numero_usuario+"'"+" and  lugar.calle="+"'"+calle_usuario+"'"+" and usuario.id=dtl_lugar_usuario.id_usuario and lugar.id=dtl_lugar_usuario.id_lugar and usuario.estatus=1",null);
+                }else if (selection.equals("residente_o_inquilino")){
+                    String calle_usuario = selectionArgs[0];
+                    String numero_usuario = selectionArgs[1];
+                    String id_residencial_usuario = selectionArgs[2];
+
+                    cursor = bd.rawQuery("SELECT usuario.id,usuario.nombre,usuario.a_paterno,usuario.a_materno,usuario.correo_electronico,usuario.token,usuario.notificacion  FROM usuario,lugar, dtl_lugar_usuario WHERE usuario.id_residencial="+"'"+id_residencial_usuario+"'"+" and lugar.numero="+"'"+numero_usuario+"'"+" and lugar.calle="+"'"+calle_usuario+"'"+"  and usuario.id=dtl_lugar_usuario.id_usuario and lugar.id=dtl_lugar_usuario.id_lugar and usuario.estatus=1 and usuario.tipo_usuario=2",null);
+                }else if (selection.equals("dts_accesso_autos")){
+
+                    String id_usu = selectionArgs[0];
+                    String id_residencial_usuario = selectionArgs[1];
+                    cursor = bd.rawQuery("SELECT id,nombre,a_paterno,a_materno,telefono,token,correo_electronico FROM usuario WHERE id ="+"'"+id_usu+"'"+" and id_residencial="+"'"+id_residencial_usuario+"'"+" and estatus=1",null);
+                }
+                break;
+            case CORRESPONDENCIA:
+                if (selection.equals("Offline")){
+                    String folio_corres = selectionArgs[0];
+                    String id_res_corres = selectionArgs[1];
+                    cursor = bd.rawQuery("SELECT * FROM correspondencia WHERE id_residencial="+"'"+id_res_corres+"'"+" and id_offline ="+"'"+folio_corres+"'"+"  and estatus=2 ORDER BY id DESC LIMIT 1",null);
+                }else if (selection.equals("Online")){
+                    String folio_corres = selectionArgs[0];
+                    String id_res_corres = selectionArgs[1];
+                    cursor = bd.rawQuery("SELECT * FROM correspondencia WHERE id_residencial="+"'"+id_res_corres+"'"+" and id ="+"'"+folio_corres+"'"+"  and estatus=2 ORDER BY id DESC LIMIT 1",null);
+                }else if (selection.equals("insertados")){
+                    cursor = bd.rawQuery("SELECT * FROM correspondencia WHERE sqliteEstatus = 1",null);
+                }else if (selection.equals("actualizados")){
+                    cursor = bd.rawQuery("SELECT * FROM correspondencia WHERE sqliteEstatus = 2",null);
+                }
+                break;
+            case DTL_LUGAR_USUARIO:
+                String id_dtl_lug = selectionArgs[0];
+                String id_res_dtl_lug = selectionArgs[1];
+                cursor = bd.rawQuery("SELECT lugar.nombre as persona,usuario.token FROM usuario,lugar, dtl_lugar_usuario WHERE usuario.id_residencial="+"'"+id_res_dtl_lug+"'"+" and usuario.id="+"'"+id_dtl_lug+"'"+" and usuario.id=dtl_lugar_usuario.id_usuario and lugar.id=dtl_lugar_usuario.id_lugar and usuario.estatus=1",null);
+                break;
+            case AUTO:
+                String qr_auto = selectionArgs[0];
+                String id_res_auto = selectionArgs[1];
+                cursor = bd.rawQuery("SELECT * FROM auto WHERE id_residencial="+"'"+id_res_auto+"'"+" and qr="+"'"+qr_auto+"'"+" and estatus=1",null);
+                break;
+            case VISITA:
+                if (selection.equals("vst1")){
+                    String qr_visita = selectionArgs[0];
+                    String id_res_visita = selectionArgs[1];
+                    cursor = bd.rawQuery("SELECT * FROM visita WHERE codigo_qr = "+"'"+qr_visita+"'"+" and id_residencial = "+"'"+id_res_visita+"'"+" and estatus=1 LIMIT 1",null);
+                }else if (selection.equals("vst_grupal1")){
+                    String qr_visita = selectionArgs[0];
+                    String id_res_visita = selectionArgs[1];
+                    Log.e("vst_grupal1", "SELECT * FROM visita WHERE codigo_qr = "+"'"+qr_visita+"'"+" and id_residencial = "+"'"+id_res_visita+"'"+" and estatus=1 and NOT EXISTS (SELECT * FROM   dtl_entradas_salidas WHERE visita.id = dtl_entradas_salidas.id_visita) ORDER BY nombre_visita ASC");
+                    cursor = bd.rawQuery("SELECT * FROM visita WHERE codigo_qr = "+"'"+qr_visita+"'"+" and id_residencial = "+"'"+id_res_visita+"'"+" and estatus=1 and NOT EXISTS (SELECT * FROM   dtl_entradas_salidas WHERE visita.id = dtl_entradas_salidas.id_visita) ORDER BY nombre_visita ASC",null);
+                }else if (selection.equals("vst_gru_2")){
+                    String id_visita = selectionArgs[0];
+                    String id_res_visita = selectionArgs[1];
+                    cursor = bd.rawQuery("SELECT * FROM visita WHERE id = "+"'"+id_visita+"'"+" and id_residencial =  "+"'"+id_res_visita+"'"+" and estatus=1 LIMIT 1",null);
+                }else if (selection.equals("vst_reg_5")){
+                    String id_visita = selectionArgs[0];
+                    String id_res_visita = selectionArgs[1];
+                    cursor = bd.rawQuery("SELECT * FROM visita WHERE id ="+"'"+id_visita+"'"+"  and id_residencial="+"'"+id_res_visita+"'"+" and  estatus=1",null);
+                }else if (selection.equals("sincronizacion")){
+                    cursor = bd.rawQuery("SELECT * FROM visita WHERE sqliteEstatus = 1", null);
+                }else if (selection.equals("sincronizacionActualizados")){
+                    cursor = bd.rawQuery("SELECT * FROM visita WHERE sqliteEstatus = 2", null);
+                }
+                break;
+            case CAJONES:
+                if (selection.equals("cajones")){
+                    String id_resi_cajones = selectionArgs[0];
+                    String id_cajones = selectionArgs[1];
+                    cursor = bd.rawQuery("SELECT cajones.nombre FROM cajones WHERE  cajones.id_residencial="+"'"+id_resi_cajones+"'"+" and  cajones.usado=(SELECT id_lugar FROM dtl_lugar_usuario WHERE  dtl_lugar_usuario.id_usuario = "+"'"+id_cajones+"'"+" and dtl_lugar_usuario.id_residencial="+"'"+id_resi_cajones+"'"+" and dtl_lugar_usuario.estatus=1)  and cajones.estatus=1",null);
+                }
+                break;
+            case DTL_ENTRADAS_SALIDAS:
+                if (selection.equals("consulta1")){
+                    String id_resi_entr = selectionArgs[0];
+                    String placas_entr = selectionArgs[1];
+                    cursor = bd.rawQuery("SELECT * FROM dtl_entradas_salidas WHERE placas ="+"'"+placas_entr+"'"+" and id_residencial="+"'"+id_resi_entr+"'"+" ORDER BY id DESC LIMIT 1",null);
+                }else if (selection.equals("vst_php4")){
+                    //falta la consulta
+                    String id_resi_entr = selectionArgs[0];
+                    String id_visita = selectionArgs[1];
+                    Log.e("prueba", "SELECT estatus FROM dtl_entradas_salidas WHERE id_visita = "+"'"+id_visita+"'"+" and id_residencial="+"'"+id_resi_entr+"'"+" ORDER BY id DESC LIMIT 1");
+                    cursor = bd.rawQuery("SELECT estatus FROM dtl_entradas_salidas WHERE id_visita = "+"'"+id_visita+"'"+" and id_residencial="+"'"+id_resi_entr+"'"+" ORDER BY id DESC LIMIT 1",null);
+                }else if (selection.equals("vst_reg_8")){
+                    String id_resi_entr = selectionArgs[0];
+                    String id_visita = selectionArgs[1];
+                    cursor = bd.rawQuery("SELECT * FROM dtl_entradas_salidas WHERE id_visita = "+"'"+id_visita+"'"+"  and id_residencial="+"'"+id_resi_entr+"'"+" ORDER BY id DESC LIMIT 1",null);
+                }else if (selection.equals("sincronizacion")){
+                    cursor = bd.rawQuery("SELECT * FROM dtl_entradas_salidas WHERE sqliteEstatus = 1",null);
+                }
+                break;
+            case DTL_ENTRADAS_SALIDAS_AUTOS:
+                if (selection.equals("auto2")){
+                    String id_resid = selectionArgs[0];
+                    String id_usuario = selectionArgs[1];
+                    String id_auto = selectionArgs[2];
+                    Log.e("Consulta ", "SELECT * FROM dtl_entradas_salidas_autos WHERE id_residencial="+"'"+id_resid+"'"+" and id_usuario="+"'"+id_usuario+"'"+" and  id_auto="+"'"+id_auto+"'"+" ORDER BY id DESC LIMIT 1");
+                    cursor = bd.rawQuery("SELECT * FROM dtl_entradas_salidas_autos WHERE id_residencial="+"'"+id_resid+"'"+" and id_usuario="+"'"+id_usuario+"'"+" and  id_auto="+"'"+id_auto+"'"+" ORDER BY id DESC LIMIT 1",null);
+                }
+                if (selection.equals("sincronizacion")){
+                    cursor = bd.rawQuery("SELECT * FROM dtl_entradas_salidas_autos WHERE sqliteEstatus = 1",null);
+                }
+                break;
             default:
                 Log.e("error", "Error al ejecutar query:  " + uri.toString() );
                 break;
@@ -175,6 +334,13 @@ public class ContentProvider extends android.content.ContentProvider {
                 insert = bd.insert("app_caseta", null, values);
                 if (insert == -1){
                     Log.e("error", "Error al registrar en app_caseta");
+                    return null;
+                }
+                break;
+            case APP_CASETA_IMA:
+                insert = bd.insert("app_caseta_ima", null, values);
+                if (insert == -1){
+                    Log.e("error", "Error al registrar en app_caseta_ima");
                     return null;
                 }
                 break;
@@ -276,6 +442,69 @@ public class ContentProvider extends android.content.ContentProvider {
                     return null;
                 }
                 break;
+            case LUGAR:
+                insert = bd.insert("lugar",null, values);
+                if (insert == -1){
+                    Log.e("error", "Error al registrar en lugar");
+                    return null;
+                }
+                break;
+            case USUARIO:
+                insert = bd.insert("usuario",null, values);
+                if (insert == -1){
+                    Log.e("error", "Error al registrar en usuario");
+                    return null;
+                }
+                break;
+            case DTL_LUGAR_USUARIO:
+                insert = bd.insert("dtl_lugar_usuario",null, values);
+                if (insert == -1){
+                    Log.e("error", "Error al registrar en dtl_lugar_usuario");
+                    return null;
+                }
+                break;
+            case CORRESPONDENCIA:
+                insert = bd.insert("correspondencia",null, values);
+                if (insert == -1){
+                    Log.e("error", "Error al registrar en correspondencia");
+                    return null;
+                }
+                break;
+            case DTL_ENTRADAS_SALIDAS:
+                insert = bd.insert("dtl_entradas_salidas",null, values);
+                if (insert == -1){
+                    Log.e("error", "Error al registrar en dtl_entradas_salidas");
+                    return null;
+                }
+                break;
+            case VISITA:
+                insert = bd.insert("visita",null, values);
+                if (insert == -1){
+                    Log.e("error", "Error al registrar en visita");
+                    return null;
+                }
+                break;
+            case AUTO:
+                insert = bd.insert("auto",null, values);
+                if (insert == -1){
+                    Log.e("error", "Error al registrar en auto");
+                    return null;
+                }
+                break;
+            case CAJONES:
+                insert = bd.insert("cajones",null, values);
+                if (insert == -1){
+                    Log.e("error", "Error al registrar en cajones");
+                    return null;
+                }
+                break;
+            case DTL_ENTRADAS_SALIDAS_AUTOS:
+                insert = bd.insert("dtl_entradas_salidas_autos",null, values);
+                if (insert == -1){
+                    Log.e("error", "Error al registrar en dtl_entradas_salidas_autos");
+                    return null;
+                }
+                break;
             default:
                 Log.e("error", "Error al insertar el registro:  " + uri.toString() );
                 break;
@@ -292,6 +521,9 @@ public class ContentProvider extends android.content.ContentProvider {
         switch (uriMatcher.match(uri)){
             case APP_CASETA:
                 delete = bd.delete("app_caseta",null,null);
+                break;
+            case APP_CASETA_IMA:
+                delete = bd.delete("app_caseta_ima",null,null);
                 break;
             case INCIDENCIAS:
                 delete = bd.delete("incidencias",null,null);
@@ -335,6 +567,33 @@ public class ContentProvider extends android.content.ContentProvider {
             case FOTOS_OFFLINE:
                 delete = bd.delete("fotosOffline", selection, null);
                 break;
+            case LUGAR:
+                delete = bd.delete("lugar", null, null);
+                break;
+            case USUARIO:
+                delete = bd.delete("usuario", null, null);
+                break;
+            case DTL_LUGAR_USUARIO:
+                delete = bd.delete("dtl_lugar_usuario", null, null);
+                break;
+            case CORRESPONDENCIA:
+                delete = bd.delete("correspondencia", null, null);
+                break;
+            case DTL_ENTRADAS_SALIDAS:
+                delete = bd.delete("dtl_entradas_salidas", null, null);
+                break;
+            case VISITA:
+                delete = bd.delete("visita", null, null);
+                break;
+            case AUTO:
+                delete = bd.delete("auto", null, null);
+                break;
+            case CAJONES:
+                delete = bd.delete("cajones", null, null);
+                break;
+            case DTL_ENTRADAS_SALIDAS_AUTOS:
+                delete = bd.delete("dtl_entradas_salidas_autos", null, null);
+                break;
             default:
                 Log.e("error", "Error al eliminar el registro:  " + uri.toString() );
                 break;
@@ -345,6 +604,19 @@ public class ContentProvider extends android.content.ContentProvider {
 
     @Override
     public int update(@NonNull Uri uri, @Nullable ContentValues values, @Nullable String selection, @Nullable String[] selectionArgs) {
-        return 0;
+
+        int actualizar = -1;
+
+        switch (uriMatcher.match(uri)){
+            case CORRESPONDENCIA:
+                actualizar = bd.update("correspondencia", values, selection, null);
+                break;
+            case VISITA:
+                actualizar = bd.update("visita", values, selection, null);
+                break;
+            default:
+                break;
+        }
+        return actualizar;
     }
 }
