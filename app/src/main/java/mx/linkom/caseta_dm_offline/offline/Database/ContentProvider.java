@@ -265,6 +265,14 @@ public class ContentProvider extends android.content.ContentProvider {
                     cursor = bd.rawQuery("SELECT * FROM visita WHERE sqliteEstatus = 1", null);
                 }else if (selection.equals("sincronizacionActualizados")){
                     cursor = bd.rawQuery("SELECT * FROM visita WHERE sqliteEstatus = 2", null);
+                }else if (selection.equals("vst_php9")){
+                    String id_visita = selectionArgs[0];
+                    String id_res_visita = selectionArgs[1];
+                    cursor = bd.rawQuery("SELECT * FROM visita WHERE id ="+"'"+id_visita+"'"+"  and id_residencial="+"'"+id_res_visita+"'",null);
+                }else if (selection.equals("vst_gru_3")){
+                    String qr = selectionArgs[0];
+                    String id_resid = selectionArgs[1];
+                    cursor = bd.rawQuery("SELECT * FROM visita WHERE codigo_qr = "+"'"+qr+"'"+" and id_residencial = "+"'"+id_resid+"'"+" and estatus=1 and exists (SELECT * FROM   dtl_entradas_salidas WHERE visita.id = dtl_entradas_salidas.id_visita and dtl_entradas_salidas.estatus=1) ORDER BY nombre_visita ASC",null);
                 }
                 break;
             case CAJONES:
@@ -291,6 +299,12 @@ public class ContentProvider extends android.content.ContentProvider {
                     cursor = bd.rawQuery("SELECT * FROM dtl_entradas_salidas WHERE id_visita = "+"'"+id_visita+"'"+"  and id_residencial="+"'"+id_resi_entr+"'"+" ORDER BY id DESC LIMIT 1",null);
                 }else if (selection.equals("sincronizacion")){
                     cursor = bd.rawQuery("SELECT * FROM dtl_entradas_salidas WHERE sqliteEstatus = 1",null);
+                }else if (selection.equals("vst_php6")){
+                    String id_resi_entr = selectionArgs[0];
+                    String id_visita = selectionArgs[1];
+                    cursor = bd.rawQuery("SELECT id,id_visita,estatus,foto1,foto2,foto3,personas,placas,sqliteEstatus FROM dtl_entradas_salidas WHERE id_visita ="+"'"+id_visita+"'"+" and id_residencial="+"'"+id_resi_entr+"'"+" ORDER BY id DESC LIMIT 1",null);
+                }else if (selection.equals("sincronizacion2")){
+                    cursor = bd.rawQuery("SELECT * FROM dtl_entradas_salidas WHERE sqliteEstatus = 2",null);
                 }
                 break;
             case DTL_ENTRADAS_SALIDAS_AUTOS:
@@ -300,9 +314,10 @@ public class ContentProvider extends android.content.ContentProvider {
                     String id_auto = selectionArgs[2];
                     Log.e("Consulta ", "SELECT * FROM dtl_entradas_salidas_autos WHERE id_residencial="+"'"+id_resid+"'"+" and id_usuario="+"'"+id_usuario+"'"+" and  id_auto="+"'"+id_auto+"'"+" ORDER BY id DESC LIMIT 1");
                     cursor = bd.rawQuery("SELECT * FROM dtl_entradas_salidas_autos WHERE id_residencial="+"'"+id_resid+"'"+" and id_usuario="+"'"+id_usuario+"'"+" and  id_auto="+"'"+id_auto+"'"+" ORDER BY id DESC LIMIT 1",null);
-                }
-                if (selection.equals("sincronizacion")){
+                }else if (selection.equals("sincronizacion")){
                     cursor = bd.rawQuery("SELECT * FROM dtl_entradas_salidas_autos WHERE sqliteEstatus = 1",null);
+                }else if (selection.equals("sincronizacionActualizados")){
+                    cursor = bd.rawQuery("SELECT * FROM dtl_entradas_salidas_autos WHERE sqliteEstatus = 2",null);
                 }
                 break;
             default:
@@ -613,6 +628,12 @@ public class ContentProvider extends android.content.ContentProvider {
                 break;
             case VISITA:
                 actualizar = bd.update("visita", values, selection, null);
+                break;
+            case DTL_ENTRADAS_SALIDAS:
+                actualizar = bd.update("dtl_entradas_salidas", values, selection, null);
+                break;
+            case DTL_ENTRADAS_SALIDAS_AUTOS:
+                actualizar = bd.update("dtl_entradas_salidas_autos", values, selection, null);
                 break;
             default:
                 break;

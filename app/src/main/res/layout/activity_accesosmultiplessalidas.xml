@@ -31,7 +31,7 @@
                 android:orientation="vertical">
 
 
-                <LinearLayout
+                <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
@@ -41,20 +41,28 @@
                     <ImageView
                         android:layout_width="44dp"
                         android:layout_height="28dp"
-                        android:src="@drawable/menu"
+                        android:layout_alignParentStart="true"
                         android:onClick="showPopup"
-                        />
+                        android:src="@drawable/menu" />
+
                     <TextView
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_centerHorizontal="true"
                         android:layout_marginLeft="22dp"
+                        android:fontFamily="@font/fontNegritaC"
                         android:text="Permitir Salida"
                         android:textColor="@color/fontColorBlanco"
-                        android:textSize="@dimen/fontSizeEncabezados"
-                        android:fontFamily="@font/fontNegritaC"
-                        />
+                        android:textSize="@dimen/fontSizeEncabezados" />
 
-                </LinearLayout>
+                    <ImageView
+                        android:id="@+id/iconoInternetAccesosMultiplesSalidas"
+                        android:layout_width="44dp"
+                        android:layout_height="28dp"
+                        android:layout_alignParentEnd="true"
+                        app:srcCompat="@drawable/ic_offline" />
+
+                </RelativeLayout>
             </LinearLayout>
         </FrameLayout>
     </ScrollView>
@@ -652,17 +660,18 @@
         android:id="@+id/rlDenegado"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="gone"
-        >
+        android:visibility="gone">
+
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent">
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_gravity="center"
                 android:layout_centerInParent="true"
+                android:layout_gravity="center"
+                android:orientation="vertical"
                 android:textAlignment="center">
 
                 <LinearLayout
@@ -670,10 +679,9 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:paddingLeft="16dp"
-                    android:paddingRight="16dp"
                     android:paddingTop="12dp"
-                    android:paddingBottom="12dp"
-                    >
+                    android:paddingRight="16dp"
+                    android:paddingBottom="12dp">
 
 
                     <TextView
@@ -682,23 +690,22 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:layout_weight="1"
-                        android:text="¡ AVISO !"
-                        android:textSize="@dimen/fontSizeEncabezados"
                         android:background="@color/fontColorRojo"
-                        android:textColor="@color/fontColorBlanco"
-                        android:textAlignment="center"
                         android:fontFamily="@font/fontNegritaC"
-                        />
+                        android:text="¡ AVISO !"
+                        android:textAlignment="center"
+                        android:textColor="@color/fontColorBlanco"
+                        android:textSize="@dimen/fontSizeEncabezados" />
                 </LinearLayout>
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:paddingLeft="16dp"
-                    android:paddingRight="16dp"
                     android:paddingTop="12dp"
-                    android:paddingBottom="12dp"
-                    >
+                    android:paddingRight="16dp"
+                    android:paddingBottom="12dp">
 
                     <TextView
                         android:id="@+id/setMensaje"
@@ -706,32 +713,32 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:layout_weight="1"
+                        android:fontFamily="@font/fontNegritaC"
                         android:text="¡ AVISO !"
-                        android:textSize="@dimen/fontSizeEncabezados"
-                        android:textColor="@color/fontColorNegro"
                         android:textAlignment="center"
-                        android:fontFamily="@font/fontNegritaC"/>
+                        android:textColor="@color/fontColorNegro"
+                        android:textSize="@dimen/fontSizeEncabezados" />
                 </LinearLayout>
+
                 <LinearLayout
                     android:id="@+id/ContinuarBoton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:paddingLeft="16dp"
-                    android:paddingRight="16dp"
                     android:paddingTop="12dp"
+                    android:paddingRight="16dp"
                     android:paddingBottom="12dp"
                     android:visibility="gone">
 
 
                     <TextView
                         android:layout_width="0dp"
-                        android:layout_weight="1"
                         android:layout_height="wrap_content"
-                        android:textSize="@dimen/fontSize"
-                        android:textColor="@color/fontColorGris"
                         android:layout_gravity="center"
-                        />
+                        android:layout_weight="1"
+                        android:textColor="@color/fontColorGris"
+                        android:textSize="@dimen/fontSize" />
 
                     <Button
                         android:id="@+id/continuar"
@@ -745,15 +752,15 @@
                         android:text="Continuar"
                         android:textColor="@color/FormTextColor"
                         android:textSize="@dimen/fontSize"
-                        />
+                        android:visibility="gone" />
+
                     <TextView
                         android:layout_width="0dp"
-                        android:layout_weight="1"
                         android:layout_height="wrap_content"
-                        android:textSize="@dimen/fontSize"
-                        android:textColor="@color/fontColorGris"
                         android:layout_gravity="center"
-                        />
+                        android:layout_weight="1"
+                        android:textColor="@color/fontColorGris"
+                        android:textSize="@dimen/fontSize" />
 
                 </LinearLayout>
 

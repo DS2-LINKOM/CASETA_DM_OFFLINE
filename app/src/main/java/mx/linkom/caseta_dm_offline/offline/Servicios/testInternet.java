@@ -370,7 +370,9 @@ public class testInternet extends Service {
 
                     datosinsertar += cursor.getString(0) + "sIgCaM"
                             + cursor.getString(1) + "sIgCaM"
-                            + cursor.getString(9) + "sIgCaM" + "sIgObJ";
+                            + cursor.getString(9) + "sIgCaM"
+                            + cursor.getString(11) + "sIgCaM"
+                            + cursor.getString(12) + "sIgCaM" + "sIgObJ";
 
                 } while (cursor.moveToNext());
             }
@@ -459,7 +461,7 @@ public class testInternet extends Service {
 
             //Si la cadena es vacia, solo actualizar tabla, si no es vacia enviar datos al servidor
             if (datosinsertarDtl_entradas_salidas.isEmpty()){
-                recibirDtl_entradas_salidas(getApplicationContext());
+                enviarDtl_entradas_salidasActualizadas(getApplicationContext());
             }else {
                 String finalDatosinsertar = datosinsertarDtl_entradas_salidas;
                 StringRequest stringRequest = new StringRequest(Request.Method.POST, urlInsertIncidencias, new Response.Listener<String>() {
@@ -469,7 +471,7 @@ public class testInternet extends Service {
 
                         if (response.equals("1")){
 
-                            recibirDtl_entradas_salidas(getApplicationContext());
+                            enviarDtl_entradas_salidasActualizadas(getApplicationContext());
 
                         }else if (response.equals("0")){
                             Log.e("error", "Error al enviar dtl_entradas_salidas");
@@ -488,6 +490,77 @@ public class testInternet extends Service {
                         Map<String, String> params = new HashMap<>();
                         params.put("datos", finalDatosinsertar);
                         System.out.println("Envia esto Dtl_entradas_salidas" + finalDatosinsertar);
+                        return params;
+                    }
+                };
+
+                MySingleton.getInstance(context).addToRequestQue(stringRequest);
+            }
+
+
+        }catch (Exception ex){
+            Log.e("error", ex.toString());
+        }
+
+    }
+
+    public void enviarDtl_entradas_salidasActualizadas(Context context){
+
+        System.out.println("Enviar Dtl_entradas_salidas Actualizadas");
+
+        try{
+
+            final String url = Global_info.getURL()+"actualizarDtl_entradas_salidas.php?bd_name="+Conf.getBd()+"&bd_user="+Conf.getBdUsu()+"&bd_pwd="+Conf.getBdCon();
+
+            Cursor cursor = getContentResolver().query(UrisContentProvider.URI_CONTENIDO_DTL_ENTRADAS_SALIDAS, null, "sincronizacion2", null, null);
+
+
+                String datosActualizar = "";
+
+            if (cursor.moveToFirst()){
+                do {
+
+                    datosActualizar += cursor.getString(0) + "sIgCaM"
+                            + cursor.getString(1) + "sIgCaM"
+                            + cursor.getString(4) + "sIgCaM"
+                            + cursor.getString(6) + "sIgCaM"
+                            + cursor.getString(15) + "sIgCaM" + "sIgObJ";
+
+                } while (cursor.moveToNext());
+            }
+            cursor.close();
+
+            //Si la cadena es vacia, solo actualizar tabla, si no es vacia enviar datos al servidor
+            if (datosActualizar.isEmpty()){
+                recibirDtl_entradas_salidas(getApplicationContext());
+            }else {
+                String finalDatosinsertar = datosActualizar;
+                StringRequest stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+                    @RequiresApi(api = Build.VERSION_CODES.O)
+                    @Override
+                    public void onResponse(String response) {
+
+                        if (response.equals("1")){
+
+                            recibirDtl_entradas_salidas(getApplicationContext());
+
+                        }else if (response.equals("0")){
+                            Log.e("error", "Error al enviar Visita Actualizadas");
+                        }
+
+                    }
+                }, new Response.ErrorListener() {
+                    @RequiresApi(api = Build.VERSION_CODES.O)
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                    }
+                }){
+                    @Override
+                    protected Map<String, String> getParams() throws AuthFailureError {
+                        Map<String, String> params = new HashMap<>();
+                        params.put("datos", finalDatosinsertar);
+                        System.out.println("Envia esto Dtl_entradas_salidas Actualizadas" + finalDatosinsertar);
                         return params;
                     }
                 };
@@ -537,7 +610,7 @@ public class testInternet extends Service {
 
             //Si la cadena es vacia, solo actualizar tabla, si no es vacia enviar datos al servidor
             if (datosinsertarDtl_entradas_salidas_autos.isEmpty()){
-                recibirDtl_entradas_salidas_autos(getApplicationContext());
+                enviarDtl_entradas_salidas_autosActualizadas(getApplicationContext());
             }else {
                 String finalDatosinsertar = datosinsertarDtl_entradas_salidas_autos;
                 StringRequest stringRequest = new StringRequest(Request.Method.POST, urlInsertIncidencias, new Response.Listener<String>() {
@@ -547,7 +620,7 @@ public class testInternet extends Service {
 
                         if (response.equals("1")){
 
-                            recibirDtl_entradas_salidas_autos(getApplicationContext());
+                            enviarDtl_entradas_salidas_autosActualizadas(getApplicationContext());
 
                         }else if (response.equals("0")){
                             Log.e("error", "Error al enviar dtl_entradas_salidas_autos");
@@ -566,6 +639,77 @@ public class testInternet extends Service {
                         Map<String, String> params = new HashMap<>();
                         params.put("datos", finalDatosinsertar);
                         System.out.println("Envia esto Dtl_entradas_salidas_autos" + finalDatosinsertar);
+                        return params;
+                    }
+                };
+
+                MySingleton.getInstance(context).addToRequestQue(stringRequest);
+            }
+
+
+        }catch (Exception ex){
+            Log.e("error", ex.toString());
+        }
+
+    }
+
+    public void enviarDtl_entradas_salidas_autosActualizadas(Context context){
+
+        System.out.println("Enviar Dtl_entradas_salidas_autos Actualizadas");
+
+        try{
+
+            final String url = Global_info.getURL()+"actualizarDtl_entradas_salidas_autos.php?bd_name="+Conf.getBd()+"&bd_user="+Conf.getBdUsu()+"&bd_pwd="+Conf.getBdCon();
+
+            Cursor cursor = getContentResolver().query(UrisContentProvider.URI_CONTENIDO_DTL_ENTRADAS_SALIDAS_AUTOS, null, "sincronizacionActualizados", null, null);
+
+
+            String datosActualizar = "";
+
+            if (cursor.moveToFirst()){
+                do {
+
+                    datosActualizar += cursor.getString(0) + "sIgCaM"
+                            + cursor.getString(1) + "sIgCaM"
+                            + cursor.getString(6) + "sIgCaM"
+                            + cursor.getString(7) + "sIgCaM"
+                            + cursor.getString(11) + "sIgCaM" + "sIgObJ";
+
+                } while (cursor.moveToNext());
+            }
+            cursor.close();
+
+            //Si la cadena es vacia, solo actualizar tabla, si no es vacia enviar datos al servidor
+            if (datosActualizar.isEmpty()){
+                recibirDtl_entradas_salidas_autos(getApplicationContext());
+            }else {
+                String finalDatosinsertar = datosActualizar;
+                StringRequest stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+                    @RequiresApi(api = Build.VERSION_CODES.O)
+                    @Override
+                    public void onResponse(String response) {
+
+                        if (response.equals("1")){
+
+                            recibirDtl_entradas_salidas_autos(getApplicationContext());
+
+                        }else if (response.equals("0")){
+                            Log.e("error", "Error al enviar Visita Actualizadas");
+                        }
+
+                    }
+                }, new Response.ErrorListener() {
+                    @RequiresApi(api = Build.VERSION_CODES.O)
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                    }
+                }){
+                    @Override
+                    protected Map<String, String> getParams() throws AuthFailureError {
+                        Map<String, String> params = new HashMap<>();
+                        params.put("datos", finalDatosinsertar);
+                        System.out.println("Envia esto dtl_entradas_salidas_autos Actualizadas" + finalDatosinsertar);
                         return params;
                     }
                 };
